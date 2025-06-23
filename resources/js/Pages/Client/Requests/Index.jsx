@@ -1,414 +1,597 @@
-import React, { useState } from 'react';
-import ClientLayout from '../../../Layouts/ClientLayout';
-import { useToast } from '../../../Context/ToastContext';
-import { useForm } from '@inertiajs/react';
+import React, { useState } from "react";
+import ClientLayout from "../../../Layouts/ClientLayout";
+import { useToast } from "../../../Context/ToastContext";
+import { Link, router } from "@inertiajs/react";
 
-export default function CreateRequest({ auth }) {
-    const { success, error, info, warning } = useToast();
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    
-    const { data, setData, post, processing, errors, reset } = useForm({
-        type: '',
-        priority: 'medium',
-        subject: '',
-        description: '',
-        contact_preference: ['email'],
-        phone: '',
-        preferred_contact_time: '',
-        attachments: [],
-    });
+export default function RequestIndex({
+    auth,
+    requests = [],
+    stats = {},
+    filters = {},
+}) {
+    const { info, success } = useToast();
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-    const requestTypes = [
-        { value: 'document', label: 'Document Request', icon: '📄', description: 'Request documents, reports, or certificates' },
-        { value: 'appointment', label: 'Schedule Appointment', icon: '📅', description: 'Book or reschedule an appointment' },
-        { value: 'medical', label: 'Medical Support', icon: '🏥', description: 'Medical questions or concerns' },
-        { value: 'technical', label: 'Technical Support', icon: '💻', description: 'Portal or technical issues' },
-        { value: 'billing', label: 'Billing Inquiry', icon: '💳', description: 'Payment or billing questions' },
-        { value: 'general', label: 'General Support', icon: '❓', description: 'Other questions or requests' },
-    ];
+    // Mock data if no real data provided
+    const mockRequests =
+        requests.length > 0
+            ? requests
+            : [
+                  {
+                      id: 1,
+                      type: "document",
+                      subject: "Medical Records Request",
+                      description: "Need copies of my recent test results",
+                      status: "completed",
+                      priority: "medium",
+                      created_at: "2024-06-20T10:30:00.000000Z",
+                      updated_at: "2024-06-22T14:15:00.000000Z",
+                      estimated_completion: "2024-06-25T17:00:00.000000Z",
+                      attachments: ["test_results.pdf"],
+                      contact_preference: ["email"],
+                      admin_notes: "Documents sent via secure email",
+                      type_label: "Document Request",
+                      status_label: "Completed",
+                      priority_label: "Medium",
+                      status_color: "text-green-400",
+                      priority_color: "text-yellow-400",
+                  },
+                  {
+                      id: 2,
+                      type: "appointment",
+                      subject: "Schedule Follow-up Appointment",
+                      description: "Need to schedule follow-up for next week",
+                      status: "in_progress",
+                      priority: "high",
+                      created_at: "2024-06-21T09:15:00.000000Z",
+                      updated_at: "2024-06-21T11:30:00.000000Z",
+                      estimated_completion: "2024-06-24T12:00:00.000000Z",
+                      attachments: [],
+                      contact_preference: ["phone", "email"],
+                      admin_notes: "Checking availability for next week",
+                      type_label: "Schedule Appointment",
+                      status_label: "In Progress",
+                      priority_label: "High",
+                      status_color: "text-orange-400",
+                      priority_color: "text-orange-400",
+                  },
+                  {
+                      id: 3,
+                      type: "technical",
+                      subject: "Cannot Access Documents",
+                      description:
+                          "Getting error when trying to download my reports",
+                      status: "submitted",
+                      priority: "medium",
+                      created_at: "2024-06-22T16:45:00.000000Z",
+                      updated_at: "2024-06-22T16:45:00.000000Z",
+                      estimated_completion: "2024-06-25T16:45:00.000000Z",
+                      attachments: ["screenshot.png"],
+                      contact_preference: ["email"],
+                      admin_notes: null,
+                      type_label: "Technical Support",
+                      status_label: "Submitted",
+                      priority_label: "Medium",
+                      status_color: "text-blue-400",
+                      priority_color: "text-yellow-400",
+                  },
+                  {
+                      id: 4,
+                      type: "billing",
+                      subject: "Question about invoice #12345",
+                      description:
+                          "Need clarification on billing charges for last month",
+                      status: "reviewed",
+                      priority: "low",
+                      created_at: "2024-06-18T14:20:00.000000Z",
+                      updated_at: "2024-06-19T09:45:00.000000Z",
+                      estimated_completion: "2024-06-23T14:20:00.000000Z",
+                      attachments: [],
+                      contact_preference: ["email"],
+                      admin_notes: "Finance team reviewing the invoice",
+                      type_label: "Billing Inquiry",
+                      status_label: "Reviewed",
+                      priority_label: "Low",
+                      status_color: "text-yellow-400",
+                      priority_color: "text-green-400",
+                  },
+              ];
 
-    const priorityLevels = [
-        { value: 'low', label: 'Low', color: 'text-green-400', description: 'Response within 3-5 business days' },
-        { value: 'medium', label: 'Medium', color: 'text-yellow-400', description: 'Response within 1-2 business days' },
-        { value: 'high', label: 'High', color: 'text-orange-400', description: 'Response within 24 hours' },
-        { value: 'urgent', label: 'Urgent', color: 'text-red-400', description: 'Immediate attention required' },
-    ];
+    const mockStats =
+        Object.keys(stats).length > 0
+            ? stats
+            : {
+                  total: 4,
+                  submitted: 1,
+                  in_progress: 1,
+                  completed: 1,
+                  reviewed: 1,
+              };
 
-    const handleFileSelect = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length + selectedFiles.length > 5) {
-            warning('You can upload a maximum of 5 files');
-            return;
-        }
-        
-        const validFiles = files.filter(file => {
-            const maxSize = 10 * 1024 * 1024; // 10MB
-            if (file.size > maxSize) {
-                warning(`File ${file.name} is too large. Maximum size is 10MB.`);
-                return false;
-            }
-            return true;
-        });
+    const handleFilter = (filterType, value) => {
+        const params = new URLSearchParams(window.location.search);
 
-        setSelectedFiles(prev => [...prev, ...validFiles]);
-        setData('attachments', [...selectedFiles, ...validFiles]);
-        info(`${validFiles.length} file(s) added successfully`);
-    };
-
-    const removeFile = (index) => {
-        const newFiles = selectedFiles.filter((_, i) => i !== index);
-        setSelectedFiles(newFiles);
-        setData('attachments', newFiles);
-        info('File removed');
-    };
-
-    const handleContactPreferenceChange = (preference) => {
-        const current = data.contact_preference || [];
-        let updated;
-        
-        if (current.includes(preference)) {
-            updated = current.filter(p => p !== preference);
+        if (value === "all" || value === "") {
+            params.delete(filterType);
         } else {
-            updated = [...current, preference];
+            params.set(filterType, value);
         }
-        
-        setData('contact_preference', updated);
+
+        // Use Inertia to navigate with filters
+        router.get(
+            `/requests?${params.toString()}`,
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        // Validation
-        if (!data.type) {
-            warning('Please select a request type');
-            return;
-        }
-        
-        if (!data.subject.trim()) {
-            warning('Please enter a subject for your request');
-            return;
-        }
-        
-        if (!data.description.trim()) {
-            warning('Please provide a description of your request');
-            return;
-        }
-
-        if (data.contact_preference.length === 0) {
-            warning('Please select at least one contact preference');
-            return;
-        }
-
-        info('Submitting your request...');
-
-        // Create FormData for file uploads
-        const formData = new FormData();
-        Object.keys(data).forEach(key => {
-            if (key === 'attachments') {
-                selectedFiles.forEach(file => {
-                    formData.append('attachments[]', file);
-                });
-            } else if (key === 'contact_preference') {
-                data[key].forEach(pref => {
-                    formData.append('contact_preference[]', pref);
-                });
-            } else {
-                formData.append(key, data[key]);
-            }
-        });
-
-        post('/requests', {
-            data: formData,
-            onSuccess: () => {
-                success('🎉 Request submitted successfully! You will receive a confirmation email shortly.');
-                reset();
-                setSelectedFiles([]);
-            },
-            onError: () => {
-                error('Failed to submit request. Please try again.');
-            }
-        });
+    const handleSearch = (searchTerm) => {
+        handleFilter("search", searchTerm);
     };
 
-    const selectedType = requestTypes.find(type => type.value === data.type);
-    const selectedPriority = priorityLevels.find(priority => priority.value === data.priority);
+    const openDetailsModal = (request) => {
+        setSelectedRequest(request);
+        setShowDetailsModal(true);
+    };
+
+    const closeDetailsModal = () => {
+        setSelectedRequest(null);
+        setShowDetailsModal(false);
+    };
+
+    const getTypeIcon = (type) => {
+        const icons = {
+            document: "📄",
+            appointment: "📅",
+            medical: "🏥",
+            technical: "💻",
+            billing: "💳",
+            general: "❓",
+        };
+        return icons[type] || "📋";
+    };
+
+    const getStatusBadge = (status, statusColor) => {
+        const badges = {
+            submitted: "bg-blue-500/20 border-blue-500/30",
+            reviewed: "bg-yellow-500/20 border-yellow-500/30",
+            in_progress: "bg-orange-500/20 border-orange-500/30",
+            completed: "bg-green-500/20 border-green-500/30",
+            cancelled: "bg-red-500/20 border-red-500/30",
+        };
+
+        return `${
+            badges[status] || "bg-gray-500/20 border-gray-500/30"
+        } ${statusColor}`;
+    };
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
 
     return (
-        <ClientLayout title="Submit New Request" auth={auth}>
-            <div className="max-w-4xl mx-auto space-y-8">
+        <ClientLayout title="My Requests" auth={auth}>
+            <div className="space-y-6">
                 {/* Header */}
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold text-white mb-2">Submit New Request</h2>
-                    <p className="text-gray-300">
-                        Describe your request and we'll get back to you as soon as possible
-                    </p>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 className="text-3xl font-bold text-white">
+                            My Requests
+                        </h2>
+                        <p className="text-gray-300">
+                            Track and manage all your service requests
+                        </p>
+                    </div>
+                    <Link
+                        href="/requests/create"
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                    >
+                        <span>+</span>
+                        New Request
+                    </Link>
                 </div>
 
-                {/* Main Form */}
-                <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 space-y-8">
-                    
-                    {/* Request Type Selection */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-4">
-                            Request Type *
-                        </label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {requestTypes.map((type) => (
-                                <button
-                                    key={type.value}
-                                    type="button"
-                                    onClick={() => setData('type', type.value)}
-                                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
-                                        data.type === type.value
-                                            ? 'border-blue-500 bg-blue-500/20 text-white'
-                                            : 'border-white/30 bg-white/5 text-gray-300 hover:bg-white/10'
-                                    }`}
-                                >
-                                    <div className="flex items-center mb-2">
-                                        <span className="text-2xl mr-3">{type.icon}</span>
-                                        <span className="font-medium">{type.label}</span>
-                                    </div>
-                                    <p className="text-sm opacity-80">{type.description}</p>
-                                </button>
-                            ))}
+                {/* Stats Overview */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                        <div className="text-2xl font-bold text-white">
+                            {mockStats.total}
                         </div>
-                        {errors.type && (
-                            <p className="text-red-400 text-sm mt-2">{errors.type}</p>
-                        )}
+                        <div className="text-gray-300 text-sm">Total</div>
                     </div>
-
-                    {/* Priority Level */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-4">
-                            Priority Level
-                        </label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {priorityLevels.map((priority) => (
-                                <button
-                                    key={priority.value}
-                                    type="button"
-                                    onClick={() => setData('priority', priority.value)}
-                                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-center ${
-                                        data.priority === priority.value
-                                            ? 'border-blue-500 bg-blue-500/20'
-                                            : 'border-white/30 bg-white/5 hover:bg-white/10'
-                                    }`}
-                                >
-                                    <div className={`text-xl font-bold mb-1 ${priority.color}`}>
-                                        {priority.label}
-                                    </div>
-                                    <p className="text-xs text-gray-400">{priority.description}</p>
-                                </button>
-                            ))}
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                        <div className="text-2xl font-bold text-blue-400">
+                            {mockStats.submitted}
                         </div>
+                        <div className="text-gray-300 text-sm">Submitted</div>
                     </div>
-
-                    {/* Subject */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-3">
-                            Subject *
-                        </label>
-                        <input
-                            type="text"
-                            value={data.subject}
-                            onChange={(e) => setData('subject', e.target.value)}
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder={selectedType ? `Brief summary of your ${selectedType.label.toLowerCase()}` : "Brief summary of your request"}
-                            required
-                        />
-                        {errors.subject && (
-                            <p className="text-red-400 text-sm mt-2">{errors.subject}</p>
-                        )}
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-3">
-                            Description *
-                        </label>
-                        <textarea
-                            value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
-                            rows="6"
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            placeholder="Please provide detailed information about your request. Include any relevant dates, reference numbers, or specific requirements."
-                            required
-                        />
-                        <div className="flex justify-between mt-2">
-                            <span className="text-sm text-gray-400">
-                                Be as specific as possible to help us assist you better
-                            </span>
-                            <span className="text-sm text-gray-400">
-                                {data.description.length}/1000
-                            </span>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                        <div className="text-2xl font-bold text-orange-400">
+                            {mockStats.in_progress}
                         </div>
-                        {errors.description && (
-                            <p className="text-red-400 text-sm mt-2">{errors.description}</p>
-                        )}
+                        <div className="text-gray-300 text-sm">In Progress</div>
                     </div>
-
-                    {/* File Attachments */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-3">
-                            Attachments (Optional)
-                        </label>
-                        <div className="border-2 border-dashed border-white/30 rounded-lg p-6 text-center hover:border-white/50 transition-colors">
-                            <input
-                                type="file"
-                                multiple
-                                onChange={handleFileSelect}
-                                className="hidden"
-                                id="file-upload"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
-                            />
-                            <label htmlFor="file-upload" className="cursor-pointer">
-                                <div className="text-4xl mb-2">📎</div>
-                                <p className="text-white font-medium mb-1">Click to upload files</p>
-                                <p className="text-gray-400 text-sm">
-                                    PDF, DOC, JPG, PNG up to 10MB each (max 5 files)
-                                </p>
-                            </label>
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                        <div className="text-2xl font-bold text-green-400">
+                            {mockStats.completed}
                         </div>
-
-                        {/* Selected Files */}
-                        {selectedFiles.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                                <p className="text-white font-medium">Selected Files:</p>
-                                {selectedFiles.map((file, index) => (
-                                    <div key={index} className="flex items-center justify-between bg-white/10 p-3 rounded-lg">
-                                        <div className="flex items-center">
-                                            <span className="text-lg mr-2">📄</span>
-                                            <span className="text-white text-sm">{file.name}</span>
-                                            <span className="text-gray-400 text-xs ml-2">
-                                                ({(file.size / 1024 / 1024).toFixed(1)}MB)
-                                            </span>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeFile(index)}
-                                            className="text-red-400 hover:text-red-300 transition-colors"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="text-gray-300 text-sm">Completed</div>
                     </div>
-
-                    {/* Contact Preferences */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-4">
-                            Preferred Contact Method *
-                        </label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {[
-                                { value: 'email', label: 'Email', icon: '📧', description: 'Updates via email' },
-                                { value: 'phone', label: 'Phone Call', icon: '📞', description: 'Phone consultation' },
-                                { value: 'whatsapp', label: 'WhatsApp', icon: '💬', description: 'WhatsApp messages' },
-                            ].map((method) => (
-                                <label
-                                    key={method.value}
-                                    className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                        data.contact_preference.includes(method.value)
-                                            ? 'border-blue-500 bg-blue-500/20'
-                                            : 'border-white/30 bg-white/5 hover:bg-white/10'
-                                    }`}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={data.contact_preference.includes(method.value)}
-                                        onChange={() => handleContactPreferenceChange(method.value)}
-                                        className="sr-only"
-                                    />
-                                    <span className="text-2xl mr-3">{method.icon}</span>
-                                    <div>
-                                        <div className="text-white font-medium">{method.label}</div>
-                                        <div className="text-gray-400 text-sm">{method.description}</div>
-                                    </div>
-                                </label>
-                            ))}
+                    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                        <div className="text-2xl font-bold text-yellow-400">
+                            {mockStats.reviewed || 0}
                         </div>
+                        <div className="text-gray-300 text-sm">Reviewed</div>
                     </div>
+                </div>
 
-                    {/* Phone Number (if phone selected) */}
-                    {data.contact_preference.includes('phone') && (
+                {/* Filters and Search */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        {/* Search */}
                         <div>
-                            <label className="block text-lg font-semibold text-white mb-3">
-                                Phone Number
+                            <label className="block text-sm font-medium text-white mb-2">
+                                Search
                             </label>
                             <input
-                                type="tel"
-                                value={data.phone}
-                                onChange={(e) => setData('phone', e.target.value)}
-                                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Enter your phone number"
+                                type="text"
+                                placeholder="Search requests..."
+                                defaultValue={filters.search || ""}
+                                onChange={(e) => {
+                                    clearTimeout(window.searchTimeout);
+                                    window.searchTimeout = setTimeout(() => {
+                                        handleSearch(e.target.value);
+                                    }, 300);
+                                }}
+                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                        </div>
+
+                        {/* Status Filter */}
+                        <div>
+                            <label className="block text-sm font-medium text-white mb-2">
+                                Status
+                            </label>
+                            <select
+                                value={filters.status || "all"}
+                                onChange={(e) =>
+                                    handleFilter("status", e.target.value)
+                                }
+                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="submitted">Submitted</option>
+                                <option value="reviewed">Reviewed</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+
+                        {/* Type Filter */}
+                        <div>
+                            <label className="block text-sm font-medium text-white mb-2">
+                                Type
+                            </label>
+                            <select
+                                value={filters.type || "all"}
+                                onChange={(e) =>
+                                    handleFilter("type", e.target.value)
+                                }
+                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="all">All Types</option>
+                                <option value="document">Document</option>
+                                <option value="appointment">Appointment</option>
+                                <option value="medical">Medical</option>
+                                <option value="technical">Technical</option>
+                                <option value="billing">Billing</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+
+                        {/* Clear Filters */}
+                        <div className="flex items-end">
+                            <button
+                                onClick={() => router.get("/requests")}
+                                className="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all"
+                            >
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Requests Table */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden">
+                    {mockRequests.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-white/10">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
+                                            Request
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
+                                            Type
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
+                                            Status
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
+                                            Priority
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
+                                            Created
+                                        </th>
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/10">
+                                    {mockRequests.map((request) => (
+                                        <tr
+                                            key={request.id}
+                                            className="hover:bg-white/5 transition-colors"
+                                        >
+                                            <td className="px-6 py-4">
+                                                <div>
+                                                    <div className="text-white font-medium">
+                                                        {request.subject}
+                                                    </div>
+                                                    <div className="text-gray-400 text-sm truncate max-w-xs">
+                                                        {request.description}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center">
+                                                    <span className="text-lg mr-2">
+                                                        {getTypeIcon(
+                                                            request.type
+                                                        )}
+                                                    </span>
+                                                    <span className="text-white text-sm">
+                                                        {request.type_label}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span
+                                                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(
+                                                        request.status,
+                                                        request.status_color
+                                                    )}`}
+                                                >
+                                                    {request.status_label}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span
+                                                    className={`text-sm font-medium ${request.priority_color}`}
+                                                >
+                                                    {request.priority_label}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-white text-sm">
+                                                    {formatDate(
+                                                        request.created_at
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center space-x-2">
+                                                    <button
+                                                        onClick={() =>
+                                                            openDetailsModal(
+                                                                request
+                                                            )
+                                                        }
+                                                        className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                    <Link
+                                                        href={`/requests/${request.id}`}
+                                                        className="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors"
+                                                    >
+                                                        Full View
+                                                    </Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <div className="text-6xl mb-4">📋</div>
+                            <h3 className="text-xl font-medium text-white mb-2">
+                                No requests found
+                            </h3>
+                            <p className="text-gray-400 mb-6">
+                                You haven't submitted any requests yet.
+                            </p>
+                            <Link
+                                href="/requests/create"
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105"
+                            >
+                                Submit Your First Request
+                            </Link>
                         </div>
                     )}
-
-                    {/* Preferred Contact Time */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-3">
-                            Preferred Contact Time (Optional)
-                        </label>
-                        <select
-                            value={data.preferred_contact_time}
-                            onChange={(e) => setData('preferred_contact_time', e.target.value)}
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="">Any time</option>
-                            <option value="morning">Morning (8 AM - 12 PM)</option>
-                            <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
-                            <option value="evening">Evening (5 PM - 8 PM)</option>
-                        </select>
-                    </div>
-
-                    {/* Submit Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                        <button
-                            type="button"
-                            onClick={() => window.history.back()}
-                            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-lg"
-                        >
-                            {processing ? (
-                                <span className="flex items-center justify-center">
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Submitting Request...
-                                </span>
-                            ) : (
-                                <span className="flex items-center justify-center">
-                                    Submit Request
-                                    <span className="ml-2">🚀</span>
-                                </span>
-                            )}
-                        </button>
-                    </div>
-                </form>
-
-                {/* Help Section */}
-                <div className="bg-blue-500/10 backdrop-blur-lg rounded-2xl p-6 border border-blue-500/20">
-                    <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                        <span className="mr-2">💡</span>
-                        Tips for Better Requests
-                    </h3>
-                    <ul className="text-gray-300 space-y-2 text-sm">
-                        <li>• Be specific about dates, times, and reference numbers</li>
-                        <li>• Include relevant screenshots or documents</li>
-                        <li>• Mention any previous related requests or conversations</li>
-                        <li>• For urgent matters, please call our support line directly</li>
-                    </ul>
                 </div>
+
+                {/* Quick Details Modal */}
+                {showDetailsModal && selectedRequest && (
+                    <div
+                        className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+                        onClick={closeDetailsModal}
+                    >
+                        <div
+                            className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-start mb-6">
+                                <h3 className="text-xl font-bold text-white">
+                                    Request Details
+                                </h3>
+                                <button
+                                    onClick={closeDetailsModal}
+                                    className="text-gray-400 hover:text-white transition-colors text-2xl"
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                        Subject
+                                    </label>
+                                    <p className="text-white">
+                                        {selectedRequest.subject}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                        Description
+                                    </label>
+                                    <p className="text-white">
+                                        {selectedRequest.description}
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-1">
+                                            Type
+                                        </label>
+                                        <p className="text-white flex items-center">
+                                            <span className="mr-2">
+                                                {getTypeIcon(
+                                                    selectedRequest.type
+                                                )}
+                                            </span>
+                                            {selectedRequest.type_label}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-1">
+                                            Priority
+                                        </label>
+                                        <p
+                                            className={`font-medium ${selectedRequest.priority_color}`}
+                                        >
+                                            {selectedRequest.priority_label}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                        Status
+                                    </label>
+                                    <span
+                                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(
+                                            selectedRequest.status,
+                                            selectedRequest.status_color
+                                        )}`}
+                                    >
+                                        {selectedRequest.status_label}
+                                    </span>
+                                </div>
+
+                                {selectedRequest.attachments &&
+                                    selectedRequest.attachments.length > 0 && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                                                Attachments
+                                            </label>
+                                            <div className="space-y-2">
+                                                {selectedRequest.attachments.map(
+                                                    (file, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className="flex items-center text-blue-400"
+                                                        >
+                                                            <span className="mr-2">
+                                                                📎
+                                                            </span>
+                                                            {file}
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                {selectedRequest.admin_notes && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300 mb-1">
+                                            Admin Notes
+                                        </label>
+                                        <p className="text-white bg-white/5 p-3 rounded-lg">
+                                            {selectedRequest.admin_notes}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <label className="block text-gray-300">
+                                            Created
+                                        </label>
+                                        <p className="text-white">
+                                            {formatDate(
+                                                selectedRequest.created_at
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-300">
+                                            Last Updated
+                                        </label>
+                                        <p className="text-white">
+                                            {formatDate(
+                                                selectedRequest.updated_at
+                                            )}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 mt-6">
+                                <button
+                                    onClick={closeDetailsModal}
+                                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all"
+                                >
+                                    Close
+                                </button>
+                                <Link
+                                    href={`/requests/${selectedRequest.id}`}
+                                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all"
+                                >
+                                    Full Details
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </ClientLayout>
     );
