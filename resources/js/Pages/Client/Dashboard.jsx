@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useForm } from '@inertiajs/react';
 import ClientLayout from '../../Layouts/ClientLayout';
 import { useToast } from '../../Context/ToastContext';
 
 export default function Dashboard({ auth, membership, visits, notifications }) {
-    const { success, info } = useToast();
+    const { success, info, error } = useToast();
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+    // Form for updating profile information
+    const { data, setData, patch, errors, processing } = useForm({
+        name: auth?.user?.name || '',
+        email: auth?.user?.email || '',
+    });
 
     // Mock data - replace with real props from Laravel
     const mockData = {
@@ -39,11 +47,34 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
                 info('Loading your documents...');
                 break;
             case 'profile':
-                info('Opening profile settings...');
+                setIsEditingProfile(true);
                 break;
             default:
                 info('Feature coming soon!');
         }
+    };
+
+    const handleProfileUpdate = (e) => {
+        e.preventDefault();
+        
+        patch(route('profile.update'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                success('Profile updated successfully!');
+                setIsEditingProfile(false);
+            },
+            onError: () => {
+                error('There was an error updating your profile.');
+            }
+        });
+    };
+
+    const cancelProfileEdit = () => {
+        setIsEditingProfile(false);
+        setData({
+            name: auth?.user?.name || '',
+            email: auth?.user?.email || '',
+        });
     };
 
     return (
@@ -196,35 +227,99 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
                         <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                             <span className="mr-3 text-2xl">👤</span>
                             Account Information
-                        </h3>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center py-3 border-b border-white/10">
-                                <span className="text-gray-300 font-medium">Full Name:</span>
-                                <span className="text-white font-semibold">{auth?.user?.name || 'John Doe'}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-3 border-b border-white/10">
-                                <span className="text-gray-300 font-medium">Email:</span>
-                                <span className="text-white font-semibold">{auth?.user?.email || 'john@example.com'}</span>
-                            </div>
-                            <div className="flex justify-between items-center py-3 border-b border-white/10">
-                                <span className="text-gray-300 font-medium">Member Since:</span>
-                                <span className="text-white font-semibold">
-                                    {new Date(mockData.membership.startDate).toLocaleDateString()}
-                                </span>
-                            </div>
-                            <div className="flex justify-between items-center py-3 border-b border-white/10">
-                                <span className="text-gray-300 font-medium">Account Type:</span>
-                                <span className="text-blue-400 font-semibold">Client</span>
-                            </div>
-                            <div className="pt-4">
+                            {!isEditingProfile && (
                                 <button
-                                    onClick={() => handleQuickAction('profile')}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg transition-all transform hover:scale-105 font-medium"
+                                    onClick={() => setIsEditingProfile(true)}
+                                    className="ml-auto text-sm bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 px-3 py-1 rounded-lg transition-all"
                                 >
-                                    Update Profile
+                                    Edit
                                 </button>
+                            )}
+                        </h3>
+
+                        {!isEditingProfile ? (
+                            // Display Mode
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                                    <span className="text-gray-300 font-medium">Full Name:</span>
+                                    <span className="text-white font-semibold">{auth?.user?.name || 'John Doe'}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                                    <span className="text-gray-300 font-medium">Email:</span>
+                                    <span className="text-white font-semibold">{auth?.user?.email || 'john@example.com'}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                                    <span className="text-gray-300 font-medium">Member Since:</span>
+                                    <span className="text-white font-semibold">
+                                        {new Date(mockData.membership.startDate).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                                    <span className="text-gray-300 font-medium">Account Type:</span>
+                                    <span className="text-blue-400 font-semibold">Client</span>
+                                </div>
+                                <div className="pt-4">
+                                    <button
+                                        onClick={() => setIsEditingProfile(true)}
+                                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg transition-all transform hover:scale-105 font-medium"
+                                    >
+                                        Update Profile
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            // Edit Mode
+                            <form onSubmit={handleProfileUpdate} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                                        Full Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
+                                        required
+                                    />
+                                    {errors.name && (
+                                        <p className="text-red-400 text-sm mt-1">{errors.name}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
+                                        required
+                                    />
+                                    {errors.email && (
+                                        <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+                                    )}
+                                </div>
+
+                                <div className="pt-4 flex gap-3">
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-3 px-4 rounded-lg transition-all transform hover:scale-105 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {processing ? 'Saving...' : 'Save Changes'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={cancelProfileEdit}
+                                        className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg transition-all font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
 
                     {/* Recent Activity */}

@@ -37,7 +37,8 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit');
+        // Redirect back to dashboard with success message
+        return redirect()->route('client.dashboard')->with('success', 'Profile updated successfully!');
     }
 
     /**
