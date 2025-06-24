@@ -1,45 +1,50 @@
 import React, { useState } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
+import LanguageSwitcher from '../Components/LanguageSwitcher';
+import useTranslations from '../Hooks/useTranslations';
 
 export default function ClientLayout({ children, title, auth }) {
     const page = usePage();
     const url = page.url || '';
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    
+    // Import translation function
+    const { t, getDirection } = useTranslations();
 
     const navigation = [
         {
-            name: 'Dashboard',
+            name: t('navigation.dashboard'),
             href: '/dashboard',
             icon: '📊',
             current: url === '/dashboard'
         },
         {
-            name: 'My Requests',
+            name: t('navigation.requests'),
             href: '/requests',
             icon: '📋',
             current: url.includes('/requests')
         },
         {
-            name: 'Appointments',
+            name: t('navigation.appointments'),
             href: '/appointments',
             icon: '📅',
             current: url.includes('/appointments'),
             badge: 2 // Number of upcoming appointments
         },
         {
-            name: 'WhatsApp Support',
+            name: t('navigation.whatsapp_support'),
             href: '/whatsapp',
             icon: '💬',
             current: url.includes('/whatsapp')
         },
         {
-            name: 'Documents',
+            name: t('navigation.documents'),
             href: '/documents',
             icon: '📄',
             current: url.includes('/documents')
         },
         {
-            name: 'Account',
+            name: t('navigation.account'),
             href: '/account',
             icon: '⚙️',
             current: url.includes('/account')
@@ -50,7 +55,7 @@ export default function ClientLayout({ children, title, auth }) {
         <>
             <Head title={title} />
             
-            <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+            <div className={`min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900`} dir={getDirection()}>
                 {/* Background decorative elements */}
                 <div className="absolute inset-0">
                     <div className="absolute top-10 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse"></div>
@@ -65,21 +70,21 @@ export default function ClientLayout({ children, title, auth }) {
                             <div className="flex h-16 shrink-0 items-center px-6 border-b border-white/20">
                                 <Link href="/" className="text-white text-xl font-bold flex items-center space-x-2">
                                     <span className="text-2xl">🏠</span>
-                                    <span>Homecare Portal</span>
+                                    <span>{t('messages.homecare_portal')}</span>
                                 </Link>
                             </div>
 
                             {/* User Info */}
                             <div className="px-6 py-4 border-b border-white/20">
                                 <div className="flex items-center">
-                                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
                                         {auth?.user?.name?.charAt(0) || 'U'}
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-white">
                                             {auth?.user?.name || 'User'}
                                         </p>
-                                        <p className="text-xs text-gray-300">Client Account</p>
+                                        <p className="text-xs text-gray-300">{t('messages.client_account')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -119,28 +124,28 @@ export default function ClientLayout({ children, title, auth }) {
                             {/* Quick Actions Section */}
                             <div className="px-6 py-4 border-t border-white/20 space-y-2">
                                 <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">
-                                    Quick Actions
+                                    {t('navigation.quick_actions')}
                                 </div>
                                 <Link
                                     href="/appointments/create"
                                     className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-green-500/20 hover:text-green-300 transition-all duration-200"
                                 >
                                     <span className="text-lg mr-3 group-hover:scale-110 transition-transform">📅</span>
-                                    Book Appointment
+                                    {t('navigation.book_appointment')}
                                 </Link>
                                 <Link
                                     href="/requests/create"
                                     className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-blue-500/20 hover:text-blue-300 transition-all duration-200"
                                 >
                                     <span className="text-lg mr-3 group-hover:scale-110 transition-transform">📋</span>
-                                    New Request
+                                    {t('navigation.new_request')}
                                 </Link>
                                 <Link
                                     href="/whatsapp"
                                     className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-green-500/20 hover:text-green-300 transition-all duration-200"
                                 >
                                     <span className="text-lg mr-3 group-hover:scale-110 transition-transform">💬</span>
-                                    WhatsApp Support
+                                    {t('navigation.whatsapp_support')}
                                 </Link>
                             </div>
 
@@ -151,7 +156,7 @@ export default function ClientLayout({ children, title, auth }) {
                                     className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200"
                                 >
                                     <span className="text-lg mr-3 group-hover:scale-110 transition-transform">❓</span>
-                                    Help & Support
+                                    {t('navigation.help_support')}
                                 </Link>
                                 <Link
                                     href="/logout"
@@ -160,7 +165,7 @@ export default function ClientLayout({ children, title, auth }) {
                                     className="group flex items-center w-full px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-red-500/20 hover:text-red-300 transition-all duration-200"
                                 >
                                     <span className="text-lg mr-3 group-hover:scale-110 transition-transform">🚪</span>
-                                    Logout
+                                    {t('navigation.logout')}
                                 </Link>
                             </div>
                         </div>
@@ -197,16 +202,34 @@ export default function ClientLayout({ children, title, auth }) {
                                     {url.includes('/appointments') && (
                                         <nav className="flex items-center space-x-2 text-sm text-gray-300">
                                             <span>/</span>
-                                            {url === '/appointments' && <span>All Appointments</span>}
-                                            {url.includes('/appointments/create') && <span>Book New</span>}
-                                            {url.includes('/appointments/') && url.includes('/reschedule') && <span>Reschedule</span>}
-                                            {url.includes('/appointments/') && !url.includes('/create') && !url.includes('/reschedule') && url !== '/appointments' && <span>Appointment Details</span>}
+                                            {url === '/appointments' && <span>{t('messages.my_appointments')}</span>}
+                                            {url.includes('/appointments/create') && <span>{t('messages.book_appointment')}</span>}
+                                            {url.includes('/appointments/') && url.includes('/reschedule') && <span>{t('messages.reschedule')}</span>}
+                                            {url.includes('/appointments/') && !url.includes('/create') && !url.includes('/reschedule') && url !== '/appointments' && <span>{t('messages.appointment_details')}</span>}
+                                        </nav>
+                                    )}
+                                    {/* Breadcrumb for requests */}
+                                    {url.includes('/requests') && (
+                                        <nav className="flex items-center space-x-2 text-sm text-gray-300">
+                                            <span>/</span>
+                                            {url === '/requests' && <span>{t('navigation.requests')}</span>}
+                                            {url.includes('/requests/create') && <span>{t('navigation.new_request')}</span>}
+                                        </nav>
+                                    )}
+                                    {/* Breadcrumb for WhatsApp */}
+                                    {url.includes('/whatsapp') && (
+                                        <nav className="flex items-center space-x-2 text-sm text-gray-300">
+                                            <span>/</span>
+                                            <span>{t('navigation.whatsapp_support')}</span>
                                         </nav>
                                     )}
                                 </div>
                                 
                                 {/* Quick actions */}
                                 <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
+                                    {/* Language Switcher */}
+                                    <LanguageSwitcher />
+
                                     {/* Notifications */}
                                     <button className="relative p-2 text-gray-300 hover:text-white transition-colors">
                                         <span className="sr-only">View notifications</span>
@@ -226,7 +249,15 @@ export default function ClientLayout({ children, title, auth }) {
                                             className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
                                         >
                                             <span>📅</span>
-                                            Book Appointment
+                                            {t('messages.book_appointment')}
+                                        </Link>
+                                    ) : url.includes('/whatsapp') ? (
+                                        <Link
+                                            href="/whatsapp"
+                                            className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                                        >
+                                            <span>💬</span>
+                                            {t('messages.whatsapp_support')}
                                         </Link>
                                     ) : (
                                         <Link
@@ -234,7 +265,7 @@ export default function ClientLayout({ children, title, auth }) {
                                             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
                                         >
                                             <span>+</span>
-                                            New Request
+                                            {t('navigation.new_request')}
                                         </Link>
                                     )}
                                 </div>

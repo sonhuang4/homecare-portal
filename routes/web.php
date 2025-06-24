@@ -7,11 +7,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\DashboardController;
 use App\Http\Controllers\Client\RequestController;
 use App\Http\Controllers\Client\AppointmentController;
+use App\Http\Controllers\LanguageController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return inertia('Welcome');
 });
+
+Route::get('/language/{language}', [LanguageController::class, 'switch'])->name('language.switch');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('client.dashboard');
