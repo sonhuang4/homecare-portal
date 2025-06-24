@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone', // Add phone field for contact
     ];
 
     /**
@@ -47,8 +48,19 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Get the requests for the user.
+     */
     public function requests(): HasMany
     {
         return $this->hasMany(Request::class);
+    }
+
+    /**
+     * Get the appointments for the user.
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

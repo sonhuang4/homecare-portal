@@ -20,10 +20,17 @@ export default function ClientLayout({ children, title, auth }) {
             current: url.includes('/requests')
         },
         {
-            name: 'Bookings',
-            href: '/bookings',
+            name: 'Appointments',
+            href: '/appointments',
             icon: '📅',
-            current: url.includes('/bookings')
+            current: url.includes('/appointments'),
+            badge: 2 // Number of upcoming appointments
+        },
+        {
+            name: 'WhatsApp Support',
+            href: '/whatsapp',
+            icon: '💬',
+            current: url.includes('/whatsapp')
         },
         {
             name: 'Documents',
@@ -92,13 +99,50 @@ export default function ClientLayout({ children, title, auth }) {
                                         <span className="text-lg mr-3 group-hover:scale-110 transition-transform">
                                             {item.icon}
                                         </span>
-                                        {item.name}
-                                        {item.current && (
-                                            <span className="ml-auto w-2 h-2 bg-blue-400 rounded-full"></span>
-                                        )}
+                                        <span className="flex-1">{item.name}</span>
+                                        <div className="flex items-center gap-2">
+                                            {/* Badge for notifications/counts */}
+                                            {item.badge && (
+                                                <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                                    {item.badge}
+                                                </span>
+                                            )}
+                                            {/* Current page indicator */}
+                                            {item.current && (
+                                                <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                                            )}
+                                        </div>
                                     </Link>
                                 ))}
                             </nav>
+
+                            {/* Quick Actions Section */}
+                            <div className="px-6 py-4 border-t border-white/20 space-y-2">
+                                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">
+                                    Quick Actions
+                                </div>
+                                <Link
+                                    href="/appointments/create"
+                                    className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-green-500/20 hover:text-green-300 transition-all duration-200"
+                                >
+                                    <span className="text-lg mr-3 group-hover:scale-110 transition-transform">📅</span>
+                                    Book Appointment
+                                </Link>
+                                <Link
+                                    href="/requests/create"
+                                    className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-blue-500/20 hover:text-blue-300 transition-all duration-200"
+                                >
+                                    <span className="text-lg mr-3 group-hover:scale-110 transition-transform">📋</span>
+                                    New Request
+                                </Link>
+                                <Link
+                                    href="/whatsapp"
+                                    className="group flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-green-500/20 hover:text-green-300 transition-all duration-200"
+                                >
+                                    <span className="text-lg mr-3 group-hover:scale-110 transition-transform">💬</span>
+                                    WhatsApp Support
+                                </Link>
+                            </div>
 
                             {/* Bottom Actions */}
                             <div className="px-6 py-4 border-t border-white/20 space-y-2">
@@ -149,6 +193,16 @@ export default function ClientLayout({ children, title, auth }) {
                             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
                                 <div className="flex items-center gap-x-2">
                                     <h1 className="text-xl font-semibold text-white">{title}</h1>
+                                    {/* Breadcrumb for appointments */}
+                                    {url.includes('/appointments') && (
+                                        <nav className="flex items-center space-x-2 text-sm text-gray-300">
+                                            <span>/</span>
+                                            {url === '/appointments' && <span>All Appointments</span>}
+                                            {url.includes('/appointments/create') && <span>Book New</span>}
+                                            {url.includes('/appointments/') && url.includes('/reschedule') && <span>Reschedule</span>}
+                                            {url.includes('/appointments/') && !url.includes('/create') && !url.includes('/reschedule') && url !== '/appointments' && <span>Appointment Details</span>}
+                                        </nav>
+                                    )}
                                 </div>
                                 
                                 {/* Quick actions */}
@@ -165,14 +219,24 @@ export default function ClientLayout({ children, title, auth }) {
                                         </span>
                                     </button>
 
-                                    {/* Quick add button */}
-                                    <Link
-                                        href="/requests/create"
-                                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
-                                    >
-                                        <span>+</span>
-                                        New Request
-                                    </Link>
+                                    {/* Context-sensitive quick action button */}
+                                    {url.includes('/appointments') ? (
+                                        <Link
+                                            href="/appointments/create"
+                                            className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                                        >
+                                            <span>📅</span>
+                                            Book Appointment
+                                        </Link>
+                                    ) : (
+                                        <Link
+                                            href="/requests/create"
+                                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                                        >
+                                            <span>+</span>
+                                            New Request
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </div>

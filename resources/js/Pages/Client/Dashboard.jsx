@@ -38,10 +38,12 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
     const handleQuickAction = (action) => {
         switch(action) {
             case 'book':
-                info('Redirecting to booking system...');
+                // Navigate to appointments create page
+                window.location.href = '/appointments/create';
                 break;
             case 'request':
-                info('Opening request form...');
+                // Navigate to requests create page
+                window.location.href = '/requests/create';
                 break;
             case 'documents':
                 info('Loading your documents...');
