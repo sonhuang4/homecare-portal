@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RequestController as AdminRequestController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Client\BillingController;
+use App\Http\Controllers\Admin\SubscriptionController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -32,6 +33,11 @@ Route::middleware(['auth'])->group(function () {
 // Payment and Billing Routes
 Route::middleware(['auth'])->prefix('billing')->group(function () {
     Route::post('/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
+    Route::get('/overview', [BillingController::class, 'overview'])->middleware('auth');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('admin.subscriptions.index');
 });
 
 // Client Request Routes
