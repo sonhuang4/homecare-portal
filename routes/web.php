@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\RequestController;
 use App\Http\Controllers\Client\AppointmentController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RequestController as AdminRequestController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -87,6 +88,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::patch('/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('toggle-status');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::get('/export', [UserController::class, 'export'])->name('export');
+    });
+
+    Route::prefix('requests')->name('requests.')->group(function () {
+        Route::get('/', [AdminRequestController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminRequestController::class, 'show'])->name('show');
+        Route::patch('/{id}', [AdminRequestController::class, 'update'])->name('update');
     });
 });
 
