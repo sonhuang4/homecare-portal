@@ -51,7 +51,6 @@ class Appointment extends Model
         'follow_up' => 'Follow-up Visit',
         'assessment' => 'Assessment',
         'therapy' => 'Therapy Session',
-        'medical_checkup' => 'Medical Checkup'
     ];
 
     // Status options
