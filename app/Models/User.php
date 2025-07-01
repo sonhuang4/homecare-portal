@@ -22,7 +22,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone', // Add phone field for contact
+        'phone',
+        'role',
+        'is_active',
+        'membership_tier',
+        'credit_balance',
+        'address',
     ];
 
     /**
@@ -45,7 +50,25 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'credit_balance' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is a client
+     */
+    public function isClient(): bool
+    {
+        return $this->role === 'client';
     }
 
     /**
@@ -62,5 +85,42 @@ class User extends Authenticatable
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    /**
+     * Get membership tier display name
+     */
+    public function getMembershipTierDisplayAttribute(): string
+    {
+        return match($this->membership_tier) {
+            'standard' => 'Standard',
+            'premium' => 'Premium', 
+            'deluxe' => 'Deluxe',
+            default => 'Basic'
+        };
+    }
+
+    /**
+     * Scope for active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope for admin users
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    /**
+     * Scope for client users
+     */
+    public function scopeClients($query)
+    {
+        return $query->where('role', 'client');
     }
 }

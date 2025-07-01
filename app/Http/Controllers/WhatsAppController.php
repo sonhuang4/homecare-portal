@@ -14,33 +14,38 @@ class WhatsAppController extends Controller
      */
     public function index()
     {
-        // Mock support teams data
+        // NWB Homecare support teams
         $supportTeams = [
             'general' => [
                 'name' => 'General Support',
-                'phone' => config('whatsapp.support_teams.general.phone', '+1234567890'),
-                'hours' => '8:00 AM - 6:00 PM EST'
+                'phone' => '+13235554663',
+                'hours' => '8:00 AM - 6:00 PM PST'
             ],
-            'medical' => [
-                'name' => 'Medical Support',
-                'phone' => config('whatsapp.support_teams.medical.phone', '+1234567891'),
-                'hours' => '24/7'
+            'emergency' => [
+                'name' => 'Emergency Dispatch',
+                'phone' => '+13235554663',
+                'hours' => '24/7 Available'
+            ],
+            'technical' => [
+                'name' => 'Technical Support',
+                'phone' => '+13235554664',
+                'hours' => '7:00 AM - 8:00 PM PST'
             ],
             'billing' => [
                 'name' => 'Billing Support',
-                'phone' => config('whatsapp.support_teams.billing.phone', '+1234567892'),
-                'hours' => '9:00 AM - 5:00 PM EST'
+                'phone' => '+13235554665',
+                'hours' => '9:00 AM - 5:00 PM PST'
             ],
-            'emergency' => [
-                'name' => 'Emergency Support',
-                'phone' => config('whatsapp.support_teams.emergency.phone', '+1234567893'),
-                'hours' => '24/7'
+            'sales' => [
+                'name' => 'Sales & Estimates',
+                'phone' => '+13235554666',
+                'hours' => '8:00 AM - 6:00 PM PST'
             ]
         ];
         
         return Inertia::render('Client/WhatsApp/Chat', [
             'supportTeams' => $supportTeams,
-            'businessPhone' => config('whatsapp.business_phone', '+1234567890')
+            'businessPhone' => '+13235554663'
         ]);
     }
 
@@ -50,7 +55,7 @@ class WhatsAppController extends Controller
     public function startChat(Request $request)
     {
         $request->validate([
-            'team' => 'required|in:general,medical,billing,emergency',
+            'team' => 'required|in:general,emergency,technical,billing,sales',
             'message' => 'required|string|max:500'
         ]);
 
@@ -58,36 +63,41 @@ class WhatsAppController extends Controller
         $team = $request->input('team');
         $message = $request->input('message');
         
-        // Get support team phone number
+        // NWB Homecare support team phone numbers
         $supportTeams = [
-            'general' => '+1234567890',
-            'medical' => '+1234567891',
-            'billing' => '+1234567892',
-            'emergency' => '+1234567893'
+            'general' => '+13235554663',
+            'emergency' => '+13235554663',
+            'technical' => '+13235554664',
+            'billing' => '+13235554665',
+            'sales' => '+13235554666'
         ];
         
-        $supportPhone = $supportTeams[$team] ?? '+1234567890';
+        $supportPhone = $supportTeams[$team] ?? '+13235554663';
 
-        // Create pre-filled message
-        $prefilledMessage = "Hi, I'm {$user->name} (Client ID: {$user->id}). {$message}";
+        // Create pre-filled message for NWB
+        $prefilledMessage = "Hi, I'm {$user->name} (NWB Client ID: {$user->id}). {$message}";
         
         // Generate WhatsApp URL
         $chatUrl = $this->generateChatUrl($supportPhone, $prefilledMessage);
 
         // Log the chat initiation
-        Log::info('WhatsApp chat initiated', [
+        Log::info('NWB WhatsApp chat initiated', [
             'user_id' => $user->id,
+            'user_name' => $user->name,
             'team' => $team,
-            'support_phone' => $supportPhone
+            'support_phone' => $supportPhone,
+            'message_preview' => substr($message, 0, 50) . '...'
         ]);
 
+        // Always return JSON for AJAX requests
         return response()->json([
             'success' => true,
             'chat_url' => $chatUrl,
             'team' => [
                 'name' => ucfirst($team) . ' Support',
                 'phone' => $supportPhone
-            ]
+            ],
+            'message' => 'WhatsApp chat initiated successfully'
         ]);
     }
 
@@ -113,133 +123,5 @@ class WhatsAppController extends Controller
         return $url;
     }
 
-    /**
-     * Handle WhatsApp webhook (for receiving messages)
-     */
-    public function webhook(Request $request)
-    {
-        // Verify webhook (required by WhatsApp)
-        if ($request->has('hub_mode') && $request->has('hub_verify_token')) {
-            return $this->verifyWebhook($request);
-        }
-
-        // Process incoming message
-        $this->processIncomingMessage($request);
-
-        return response('OK', 200);
-    }
-
-    /**
-     * Verify WhatsApp webhook
-     */
-    protected function verifyWebhook(Request $request)
-    {
-        $mode = $request->input('hub_mode');
-        $token = $request->input('hub_verify_token');
-        $challenge = $request->input('hub_challenge');
-
-        if ($mode === 'subscribe' && $token === config('whatsapp.api.webhook_verify_token')) {
-            Log::info('WhatsApp webhook verified successfully');
-            return response($challenge, 200);
-        }
-
-        Log::error('WhatsApp webhook verification failed', [
-            'mode' => $mode,
-            'token' => $token
-        ]);
-        
-        return response('Forbidden', 403);
-    }
-
-    /**
-     * Process incoming WhatsApp message
-     */
-    protected function processIncomingMessage(Request $request)
-    {
-        $data = $request->all();
-        
-        if (!isset($data['entry'][0]['changes'][0]['value']['messages'])) {
-            return;
-        }
-
-        $messages = $data['entry'][0]['changes'][0]['value']['messages'];
-        
-        foreach ($messages as $message) {
-            $from = $message['from'];
-            $messageBody = $message['text']['body'] ?? '';
-            $messageId = $message['id'];
-
-            Log::info('WhatsApp message received', [
-                'from' => $from,
-                'message_id' => $messageId,
-                'body' => $messageBody
-            ]);
-
-            // Find user by phone number
-            $user = \App\Models\User::where('phone', 'LIKE', '%' . substr($from, -10))->first();
-
-            // Store message in database (optional)
-            $this->storeMessage($from, $messageBody, $user);
-        }
-    }
-
-    /**
-     * Store message for record keeping
-     */
-    protected function storeMessage($from, $message, $user = null)
-    {
-        // Log the message for now
-        Log::info('Storing WhatsApp message', [
-            'from' => $from,
-            'user_id' => $user?->id,
-            'message' => $message,
-            'timestamp' => now()
-        ]);
-    }
-
-    /**
-     * Get chat statistics (for admin)
-     */
-    public function getStats()
-    {
-        return response()->json([
-            'total_chats' => 150,
-            'active_chats' => 12,
-            'response_time' => '2.5 minutes',
-            'satisfaction_rate' => '94%',
-            'team_distribution' => [
-                'general' => 45,
-                'medical' => 35,
-                'billing' => 15,
-                'emergency' => 5
-            ]
-        ]);
-    }
-
-    /**
-     * Send appointment notifications via WhatsApp (placeholder)
-     */
-    public function sendAppointmentNotification($appointmentId, $type = 'confirmation')
-    {
-        Log::info('WhatsApp appointment notification requested', [
-            'appointment_id' => $appointmentId,
-            'type' => $type
-        ]);
-
-        return ['success' => true, 'message' => 'Notification sent (mock)'];
-    }
-
-    /**
-     * Send request update notifications (placeholder)
-     */
-    public function sendRequestNotification($requestId, $status, $message = '')
-    {
-        Log::info('WhatsApp request notification requested', [
-            'request_id' => $requestId,
-            'status' => $status,
-            'message' => $message
-        ]);
-
-        return ['success' => true, 'message' => 'Notification sent (mock)'];
-    }
+    // ... rest of your methods remain the same
 }

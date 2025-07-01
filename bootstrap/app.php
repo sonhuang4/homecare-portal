@@ -26,9 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
 
-        // ADD THIS - Register language middleware alias
+        // UPDATED - Register both language and admin middleware aliases
         $middleware->alias([
             'set.language' => SetLanguage::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,  // ADD THIS LINE
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
