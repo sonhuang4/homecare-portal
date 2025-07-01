@@ -238,7 +238,7 @@ export default function EditRequest({ auth, request }) {
                             type="text"
                             value={data.subject}
                             onChange={(e) => setData('subject', e.target.value)}
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 focus:border-[#00b3ba]"
+                            className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 focus:border-[#00b3ba]"
                             placeholder="Brief summary of the property service needed"
                             required
                         />
@@ -256,7 +256,7 @@ export default function EditRequest({ auth, request }) {
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             rows="6"
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 resize-none focus:border-[#00b3ba]"
+                            className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 resize-none focus:border-[#00b3ba]"
                             placeholder="Please describe the property maintenance or repair needed. Include specific rooms, areas, symptoms, materials required, preferred timeline, etc."
                             required
                         />
@@ -282,7 +282,7 @@ export default function EditRequest({ auth, request }) {
                             value={data.property_access_info}
                             onChange={(e) => setData('property_access_info', e.target.value)}
                             rows="3"
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 resize-none focus:border-[#00b3ba]"
+                            className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 resize-none focus:border-[#00b3ba]"
                             placeholder="Gate codes, parking instructions, key location, pet information, security system details, or any special access requirements for our technicians"
                         />
                         <p className="text-sm text-gray-400 mt-2">
@@ -342,7 +342,7 @@ export default function EditRequest({ auth, request }) {
                                 type="tel"
                                 value={data.phone}
                                 onChange={(e) => setData('phone', e.target.value)}
-                                className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 focus:border-[#00b3ba]"
+                                className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 transition-all duration-300 focus:border-[#00b3ba]"
                                 placeholder="Enter phone number for technician coordination"
                             />
                             {errors.phone && (
@@ -359,7 +359,7 @@ export default function EditRequest({ auth, request }) {
                         <select
                             value={data.preferred_visit_time}
                             onChange={(e) => setData('preferred_visit_time', e.target.value)}
-                            className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white transition-all duration-300 focus:border-[#00b3ba]"
+                            className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white transition-all duration-300 focus:border-[#00b3ba]"
                         >
                             <option value="">Any time during business hours (8 AM - 6 PM)</option>
                             <option value="morning">Morning (8 AM - 12 PM)</option>

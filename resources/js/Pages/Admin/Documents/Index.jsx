@@ -291,7 +291,7 @@ export default function DocumentIndex({
                                 <select
                                     value={data.user_id}
                                     onChange={(e) => setData('user_id', e.target.value)}
-                                    className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 >
                                     <option value="">Select Client</option>
@@ -307,7 +307,7 @@ export default function DocumentIndex({
                                     type="text"
                                     value={data.title}
                                     onChange={(e) => setData('title', e.target.value)}
-                                    className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Enter document title"
                                     required
                                 />
@@ -318,7 +318,7 @@ export default function DocumentIndex({
                                 <select
                                     value={data.type}
                                     onChange={(e) => setData('type', e.target.value)}
-                                    className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select Type</option>
                                     <option value="inspection_report">📋 Inspection Report</option>
@@ -336,7 +336,7 @@ export default function DocumentIndex({
                                     type="file"
                                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
                                     onChange={(e) => setData('file', e.target.files[0])}
-                                    className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                                    className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
                                     required
                                 />
                                 <div className="text-xs text-gray-400 mt-1">
@@ -416,7 +416,7 @@ export default function DocumentIndex({
                                             300
                                         );
                                     }}
-                                    className="w-full pl-10 px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-10 px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>
@@ -431,7 +431,7 @@ export default function DocumentIndex({
                                 onChange={(e) =>
                                     handleFilter("type", e.target.value)
                                 }
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Types</option>
                                 <option value="inspection_report">📋 Inspection Report</option>
@@ -525,7 +525,7 @@ export default function DocumentIndex({
                                                     documents.length > 0
                                                 }
                                                 onChange={selectAllDocuments}
-                                                className="rounded border-gray-300 bg-white/20"
+                                                className="rounded border-gray-300 bg-[#232424]"
                                             />
                                         </th>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
@@ -568,7 +568,7 @@ export default function DocumentIndex({
                                                             document.id
                                                         )
                                                     }
-                                                    className="rounded border-gray-300 bg-white/20"
+                                                    className="rounded border-gray-300 bg-[#232424]"
                                                 />
                                             </td>
                                             <td className="px-6 py-4">

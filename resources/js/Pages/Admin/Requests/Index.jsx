@@ -279,7 +279,7 @@ export default function RequestIndex({
                                             300
                                         );
                                     }}
-                                    className="w-full pl-10 px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-10 px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>
@@ -294,7 +294,7 @@ export default function RequestIndex({
                                 onChange={(e) =>
                                     handleFilter("status", e.target.value)
                                 }
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Status</option>
                                 <option value="submitted">🔵 Submitted</option>
@@ -317,7 +317,7 @@ export default function RequestIndex({
                                 onChange={(e) =>
                                     handleFilter("type", e.target.value)
                                 }
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Types</option>
                                 <option value="document">📄 Document</option>
@@ -428,7 +428,7 @@ export default function RequestIndex({
                                                     requests.data.length > 0
                                                 }
                                                 onChange={selectAllRequests}
-                                                className="rounded border-gray-300 bg-white/20"
+                                                className="rounded border-gray-300 bg-[#232424]"
                                             />
                                         </th>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
@@ -471,7 +471,7 @@ export default function RequestIndex({
                                                             request.id
                                                         )
                                                     }
-                                                    className="rounded border-gray-300 bg-white/20"
+                                                    className="rounded border-gray-300 bg-[#232424]"
                                                 />
                                             </td>
                                             <td className="px-6 py-4">

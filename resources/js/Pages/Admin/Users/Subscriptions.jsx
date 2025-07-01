@@ -289,7 +289,7 @@ export default function Subscriptions({
                                             300
                                         );
                                     }}
-                                    className="w-full pl-10 px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-10 px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>
@@ -304,7 +304,7 @@ export default function Subscriptions({
                                 onChange={(e) =>
                                     handleFilter("status", e.target.value)
                                 }
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Status</option>
                                 <option value="active">✅ Active</option>
@@ -398,7 +398,7 @@ export default function Subscriptions({
                                                     filteredSubscriptions.length > 0
                                                 }
                                                 onChange={selectAllSubscriptions}
-                                                className="rounded border-gray-300 bg-white/20"
+                                                className="rounded border-gray-300 bg-[#232424]"
                                             />
                                         </th>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-300">
@@ -438,7 +438,7 @@ export default function Subscriptions({
                                                             subscription.id
                                                         )
                                                     }
-                                                    className="rounded border-gray-300 bg-white/20"
+                                                    className="rounded border-gray-300 bg-[#232424]"
                                                 />
                                             </td>
                                             <td className="px-6 py-4">

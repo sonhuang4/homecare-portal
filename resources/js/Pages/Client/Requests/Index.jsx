@@ -203,7 +203,7 @@ export default function RequestIndex({
                                         handleSearch(e.target.value);
                                     }, 300);
                                 }}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
 
@@ -215,7 +215,7 @@ export default function RequestIndex({
                             <select
                                 value={filters.status || "all"}
                                 onChange={(e) => handleFilter("status", e.target.value)}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Status</option>
                                 <option value="submitted">Submitted</option>
@@ -234,7 +234,7 @@ export default function RequestIndex({
                             <select
                                 value={filters.type || "all"}
                                 onChange={(e) => handleFilter("type", e.target.value)}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Types</option>
                                 <option value="document">Property Documents</option>

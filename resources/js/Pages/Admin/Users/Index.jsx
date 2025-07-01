@@ -259,7 +259,7 @@ export default function UsersIndex({ auth, users = { data: [], links: [] }, stat
                                             handleSearch(e.target.value);
                                         }, 300);
                                     }}
-                                    className="w-full pl-10 px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-10 px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>
@@ -272,7 +272,7 @@ export default function UsersIndex({ auth, users = { data: [], links: [] }, stat
                             <select
                                 value={filters.role || 'all'}
                                 onChange={(e) => handleFilter('role', e.target.value)}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Roles</option>
                                 <option value="client">👤 Client</option>
@@ -288,7 +288,7 @@ export default function UsersIndex({ auth, users = { data: [], links: [] }, stat
                             <select
                                 value={filters.status || 'all'}
                                 onChange={(e) => handleFilter('status', e.target.value)}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Status</option>
                                 <option value="active">🟢 Active</option>
@@ -370,7 +370,7 @@ export default function UsersIndex({ auth, users = { data: [], links: [] }, stat
                                                 type="checkbox"
                                                 checked={selectedUsers.length === users.data.length && users.data.length > 0}
                                                 onChange={selectAllUsers}
-                                                className="rounded border-gray-300 bg-white/20"
+                                                className="rounded border-gray-300 bg-[#232424]"
                                             />
                                         </th>
                                         <th 
@@ -422,7 +422,7 @@ export default function UsersIndex({ auth, users = { data: [], links: [] }, stat
                                                     type="checkbox"
                                                     checked={selectedUsers.includes(user.id)}
                                                     onChange={() => handleUserSelect(user.id)}
-                                                    className="rounded border-gray-300 bg-white/20"
+                                                    className="rounded border-gray-300 bg-[#232424]"
                                                 />
                                             </td>
                                             <td className="px-6 py-4">

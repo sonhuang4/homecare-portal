@@ -121,7 +121,7 @@ export default function Create({ auth, errors = {} }) {
                                             name="name"
                                             value={form.name}
                                             onChange={handleChange}
-                                            className={`w-full pl-10 px-4 py-3 bg-white/20 border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                                            className={`w-full pl-10 px-4 py-3 bg-[#232424] border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
                                                 errors.name ? 'border-red-500' : 'border-white/30'
                                             }`}
                                             placeholder="Enter full name"
@@ -147,7 +147,7 @@ export default function Create({ auth, errors = {} }) {
                                             name="email"
                                             value={form.email}
                                             onChange={handleChange}
-                                            className={`w-full pl-10 px-4 py-3 bg-white/20 border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                                            className={`w-full pl-10 px-4 py-3 bg-[#232424] border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
                                                 errors.email ? 'border-red-500' : 'border-white/30'
                                             }`}
                                             placeholder="user@example.com"
@@ -173,7 +173,7 @@ export default function Create({ auth, errors = {} }) {
                                             name="phone"
                                             value={form.phone}
                                             onChange={handleChange}
-                                            className="w-full pl-10 px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                            className="w-full pl-10 px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                                             placeholder="(555) 123-4567"
                                         />
                                     </div>
@@ -194,7 +194,7 @@ export default function Create({ auth, errors = {} }) {
                                             name="role"
                                             value={form.role}
                                             onChange={handleChange}
-                                            className="w-full pl-10 px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                            className="w-full pl-10 px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                                             required
                                         >
                                             <option value="client" className="bg-gray-800">👤 Client</option>
@@ -221,7 +221,7 @@ export default function Create({ auth, errors = {} }) {
                                         name="address"
                                         value={form.address}
                                         onChange={handleChange}
-                                        className="w-full pl-10 px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                        className="w-full pl-10 px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                                         placeholder="123 Main Street, Los Angeles, CA 90210"
                                     />
                                 </div>
@@ -245,7 +245,7 @@ export default function Create({ auth, errors = {} }) {
                                             name="password"
                                             value={form.password}
                                             onChange={handleChange}
-                                            className={`w-full pl-10 pr-12 px-4 py-3 bg-white/20 border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                                            className={`w-full pl-10 pr-12 px-4 py-3 bg-[#232424] border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
                                                 errors.password ? 'border-red-500' : 'border-white/30'
                                             }`}
                                             placeholder="Enter password"
@@ -294,7 +294,7 @@ export default function Create({ auth, errors = {} }) {
                                             name="password_confirmation"
                                             value={form.password_confirmation}
                                             onChange={handleChange}
-                                            className={`w-full pl-10 px-4 py-3 bg-white/20 border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                                            className={`w-full pl-10 px-4 py-3 bg-[#232424] border rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
                                                 errors.password_confirmation ? 'border-red-500' : 'border-white/30'
                                             }`}
                                             placeholder="Confirm password"
@@ -329,7 +329,7 @@ export default function Create({ auth, errors = {} }) {
                                         value={form.notes}
                                         onChange={handleChange}
                                         rows={3}
-                                        className="w-full pl-10 px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                                        className="w-full pl-10 px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
                                         placeholder="Internal notes about this user..."
                                     />
                                 </div>

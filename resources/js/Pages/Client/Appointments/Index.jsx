@@ -210,7 +210,7 @@ export default function AppointmentsIndex({ auth, appointments = [], stats = {},
                             <select
                                 value={filters.status || 'all'}
                                 onChange={(e) => handleFilter('status', e.target.value)}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Status</option>
                                 <option value="scheduled">Scheduled</option>
@@ -228,7 +228,7 @@ export default function AppointmentsIndex({ auth, appointments = [], stats = {},
                             <select
                                 value={filters.service_type || 'all'}
                                 onChange={(e) => handleFilter('service_type', e.target.value)}
-                                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Services</option>
                                 {Object.entries(serviceTypes).map(([value, label]) => (

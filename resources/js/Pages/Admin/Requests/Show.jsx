@@ -354,7 +354,7 @@ export default function Show({ auth, request, activity_log = [] }) {
                                     <select
                                         value={status}
                                         onChange={(e) => setStatus(e.target.value)}
-                                        className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="submitted" className="bg-gray-800">🔵 Submitted</option>
                                         <option value="reviewed" className="bg-gray-800">🟡 Reviewed</option>
@@ -373,7 +373,7 @@ export default function Show({ auth, request, activity_log = [] }) {
                                         value={internalNote}
                                         onChange={(e) => setInternalNote(e.target.value)}
                                         rows={4}
-                                        className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                        className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                         placeholder="Add internal notes about this request..."
                                     />
                                     <p className="mt-1 text-xs text-gray-400">Internal notes visible only to admin users</p>

@@ -519,7 +519,7 @@ export default function AppointmentShow({ auth, appointment: appointmentData }) 
                                     <select
                                         value={data.cancellation_reason}
                                         onChange={(e) => setData('cancellation_reason', e.target.value)}
-                                        className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:border-transparent"
+                                        className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:border-transparent"
                                         style={{ '--tw-ring-color': '#00b3ba' }}
                                         required
                                     >
@@ -540,7 +540,7 @@ export default function AppointmentShow({ auth, appointment: appointmentData }) 
                                         value={data.cancellation_notes}
                                         onChange={(e) => setData('cancellation_notes', e.target.value)}
                                         rows="3"
-                                        className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                                        className="w-full px-3 py-2 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                                         style={{ '--tw-ring-color': '#00b3ba' }}
                                         placeholder="Any additional information about the cancellation or rescheduling preferences..."
                                     />

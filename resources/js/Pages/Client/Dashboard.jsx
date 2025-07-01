@@ -143,7 +143,7 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
                                 <span className="text-gray-300">Used:</span>
                                 <span className="text-white font-medium">{mockData.visits.used}</span>
                             </div>
-                            <div className="w-full bg-white/20 rounded-full h-2">
+                            <div className="w-full bg-[#232424] rounded-full h-2">
                                 <div 
                                     className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
                                     style={{ width: `${(mockData.visits.used / mockData.visits.total) * 100}%` }}
@@ -186,7 +186,7 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <button
                             onClick={() => handleQuickAction('book')}
-                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all text-center group transform hover:scale-105"
+                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-[#232424] transition-all text-center group transform hover:scale-105"
                         >
                             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">📅</div>
                             <div className="text-white font-medium">Book Appointment</div>
@@ -195,7 +195,7 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
 
                         <button
                             onClick={() => handleQuickAction('request')}
-                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all text-center group transform hover:scale-105"
+                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-[#232424] transition-all text-center group transform hover:scale-105"
                         >
                             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">📋</div>
                             <div className="text-white font-medium">Submit Request</div>
@@ -204,7 +204,7 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
 
                         <button
                             onClick={() => handleQuickAction('documents')}
-                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all text-center group transform hover:scale-105"
+                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-[#232424] transition-all text-center group transform hover:scale-105"
                         >
                             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">📄</div>
                             <div className="text-white font-medium">View Documents</div>
@@ -213,7 +213,7 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
 
                         <button
                             onClick={() => handleQuickAction('profile')}
-                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all text-center group transform hover:scale-105"
+                            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-[#232424] transition-all text-center group transform hover:scale-105"
                         >
                             <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">⚙️</div>
                             <div className="text-white font-medium">Account Settings</div>
@@ -348,7 +348,7 @@ export default function Dashboard({ auth, membership, visits, notifications }) {
                             <div className="pt-4">
                                 <button 
                                     onClick={() => info('Opening notifications page...')}
-                                    className="w-full bg-white/10 hover:bg-white/20 text-white py-2 px-4 rounded-lg transition-all text-sm font-medium"
+                                    className="w-full bg-white/10 hover:bg-[#232424] text-white py-2 px-4 rounded-lg transition-all text-sm font-medium"
                                 >
                                     View All Notifications
                                 </button>

@@ -274,13 +274,13 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
                                     currentStep >= step 
                                         ? 'text-white border-2'
-                                        : 'bg-white/20 text-gray-400'
+                                        : 'bg-[#232424] text-gray-400'
                                 }`} style={currentStep >= step ? { backgroundColor: "#00b3ba", borderColor: "#00b3ba" } : {}}>
                                     {step}
                                 </div>
                                 {step < 4 && (
                                     <div className={`w-16 h-1 mx-2 transition-all ${
-                                        currentStep > step ? 'bg-white/20' : 'bg-white/20'
+                                        currentStep > step ? 'bg-[#232424]' : 'bg-[#232424]'
                                     }`} style={currentStep > step ? { backgroundColor: "#00b3ba" } : {}}></div>
                                 )}
                             </div>
@@ -349,7 +349,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                     onChange={(e) => handleDateChange(e.target.value)}
                                     min={getTomorrowDate()}
                                     max={getMaxDate()}
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:border-transparent"
                                     style={{ '--tw-ring-color': '#00b3ba' }}
                                     required
                                 />
@@ -410,7 +410,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                     type="text"
                                     value={data.title}
                                     onChange={(e) => setData('title', e.target.value)}
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
                                     style={{ '--tw-ring-color': '#00b3ba' }}
                                     placeholder="Brief description of the property service needed"
                                     required
@@ -429,7 +429,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                     value={data.address}
                                     onChange={(e) => setData('address', e.target.value)}
                                     rows="3"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                                     style={{ '--tw-ring-color': '#00b3ba' }}
                                     placeholder="Enter your Los Angeles property address where service is needed&#10;Include unit number, gate codes, or access instructions if applicable"
                                     required
@@ -448,7 +448,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                     value={data.description}
                                     onChange={(e) => setData('description', e.target.value)}
                                     rows="4"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                                     style={{ '--tw-ring-color': '#00b3ba' }}
                                     placeholder="Provide detailed information about the property maintenance or repair needed. Include specific rooms, areas, symptoms, materials required, or any relevant details that will help our technicians prepare for the service visit."
                                 />
@@ -501,7 +501,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                     type="tel"
                                     value={data.contact_phone}
                                     onChange={(e) => setData('contact_phone', e.target.value)}
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
                                     style={{ '--tw-ring-color': '#00b3ba' }}
                                     placeholder="Phone number for technician coordination on service day"
                                 />
@@ -551,7 +551,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                     value={data.notes}
                                     onChange={(e) => setData('notes', e.target.value)}
                                     rows="3"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                                     style={{ '--tw-ring-color': '#00b3ba' }}
                                     placeholder="Any additional information about property access, preferred materials, previous work history, or special instructions for our technicians..."
                                 />

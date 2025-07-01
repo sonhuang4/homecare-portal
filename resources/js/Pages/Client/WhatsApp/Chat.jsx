@@ -436,7 +436,7 @@ export default function WhatsAppChat({ auth, supportTeams, businessPhone }) {
                                         value={data.message}
                                         onChange={(e) => setData('message', e.target.value)}
                                         rows="4"
-                                        className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                                        className="w-full px-4 py-3 bg-[#232424] border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                                         style={{ '--tw-ring-color': '#00b3ba' }}
                                         placeholder="Describe your property maintenance need, emergency, or question. Include property address if relevant..."
                                         required

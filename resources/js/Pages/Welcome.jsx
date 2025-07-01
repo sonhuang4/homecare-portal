@@ -73,7 +73,7 @@ export default function Welcome() {
                                     </Link>
                                     <Link
                                         href="/about"
-                                        className="inline-flex items-center justify-center px-8 py-4 text-white font-semibold rounded-xl border border-white/20 bg-white/10 backdrop-blur-lg hover:bg-white/20 transition-all"
+                                        className="inline-flex items-center justify-center px-8 py-4 text-white font-semibold rounded-xl border border-white/20 bg-white/10 backdrop-blur-lg hover:bg-[#232424] transition-all"
                                     >
                                         Learn More
                                         <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
