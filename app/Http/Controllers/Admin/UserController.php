@@ -54,7 +54,6 @@ class UserController extends Controller
             'total_users' => User::count(),
             'active_users' => User::where('is_active', true)->count(),
             'new_this_month' => User::whereMonth('created_at', now()->month)->count(),
-            'subscribers' => User::whereNotNull('subscription_plan')->count(),
         ];
 
         return Inertia::render('Admin/Users/Index', [
@@ -76,24 +75,16 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::with(['requests', 'appointments'])
-                   ->withCount(['requests', 'appointments'])
-                   ->findOrFail($id);
+                  ->withCount(['requests', 'appointments'])
+                  ->findOrFail($id);
 
-        // Recent activity
-        $recentRequests = $user->requests()
-                              ->latest()
-                              ->limit(5)
-                              ->get();
+        $recentRequests = $user->requests()->latest()->limit(5)->get();
+        $recentAppointments = $user->appointments()->latest()->limit(5)->get();
 
-        $recentAppointments = $user->appointments()
-                                  ->latest()
-                                  ->limit(5)
-                                  ->get();
-
-        return Inertia::render('Admin/Users/Index', [
+        return Inertia::render('Admin/Users/Show', [
             'user' => $user,
             'recentRequests' => $recentRequests,
-            'recentAppointments' => $recentAppointments
+            'recentAppointments' => $recentAppointments,
         ]);
     }
 
@@ -109,7 +100,6 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-            'subscription_plan' => 'nullable|in:standard,premium,deluxe',
             'is_active' => 'boolean',
             'role' => 'required|in:client,admin',
             'notes' => 'nullable|string|max:1000'
@@ -147,5 +137,40 @@ class UserController extends Controller
 
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
+    }
+
+    public function create()
+    {
+        return Inertia::render('Admin/Users/Create');
+    }
+
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'role' => 'required|in:client,admin',
+            'is_active' => 'boolean',
+            'notes' => 'nullable|string|max:1000',
+            'password' => 'required|string|confirmed|min:6',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully');
+    }
+
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+
+        return Inertia::render('Admin/Users/Edit', [
+            'user' => $user
+        ]);
     }
 }
