@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { useToast } from '../../Context/ToastContext';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 
 export default function AdminDashboard({ 
     auth, 
-    stats, 
+    stats = {}, 
     recentUsers = [], 
     recentRequests = [], 
     recentAppointments = [] 
 }) {
-    const { info } = useToast();
+    const { info, success } = useToast();
     const [timeRange, setTimeRange] = useState('today');
 
     const formatDate = (dateString) => {
@@ -69,6 +69,21 @@ export default function AdminDashboard({
         return urgent.slice(0, 5);
     };
 
+    const handleTimeRangeChange = (range) => {
+        setTimeRange(range);
+        // You can add logic here to refresh stats based on time range
+        info(`Viewing ${range} statistics`);
+    };
+
+    const handleGenerateReport = () => {
+        success('Report generation started. You will be notified when ready.');
+        // Add actual report generation logic
+    };
+
+    const handleEmergencyDispatch = () => {
+        info('Emergency dispatch system is active. Monitor emergency line for urgent calls.');
+    };
+
     return (
         <AdminLayout title="Dashboard Overview" auth={auth}>
             <div className="space-y-6">
@@ -83,7 +98,8 @@ export default function AdminDashboard({
                     <div className="relative p-8">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h2 className="text-4xl font-bold text-white mb-3">
+                                <h2 className="text-4xl font-bold text-white mb-3 flex items-center">
+                                    <span className="mr-4 text-5xl">🏡</span>
                                     Welcome back, {auth.user.name}! 👋
                                 </h2>
                                 <p className="text-xl text-slate-300 mb-2">
@@ -94,13 +110,6 @@ export default function AdminDashboard({
                                 </p>
                             </div>
                             <div className="flex gap-3">
-                                <Link
-                                    href="/admin/reports/generate"
-                                    className="text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
-                                    style={{ backgroundColor: "#00b3ba" }}
-                                >
-                                    📊 Generate Report
-                                </Link>
                                 <Link
                                     href="/admin/users/create"
                                     className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2"
@@ -119,7 +128,7 @@ export default function AdminDashboard({
                         {['today', 'week', 'month'].map((range) => (
                             <button
                                 key={range}
-                                onClick={() => setTimeRange(range)}
+                                onClick={() => handleTimeRangeChange(range)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                                     timeRange === range
                                         ? 'text-white border'
@@ -136,7 +145,7 @@ export default function AdminDashboard({
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* Total Users */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-300 text-sm font-medium">Total Users</p>
@@ -150,7 +159,7 @@ export default function AdminDashboard({
                     </div>
 
                     {/* Active Requests */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-300 text-sm font-medium">Active Requests</p>
@@ -164,7 +173,7 @@ export default function AdminDashboard({
                     </div>
 
                     {/* Upcoming Appointments */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-300 text-sm font-medium">Upcoming Appointments</p>
@@ -178,7 +187,7 @@ export default function AdminDashboard({
                     </div>
 
                     {/* Monthly Revenue */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-300 text-sm font-medium">Monthly Revenue</p>
@@ -205,14 +214,14 @@ export default function AdminDashboard({
                                 </h4>
                                 <div className="space-y-3">
                                     {getUrgentItems().map((item, index) => (
-                                        <div key={index} className="flex items-center justify-between bg-red-500/5 p-3 rounded-lg">
+                                        <div key={index} className="flex items-center justify-between bg-red-500/5 p-3 rounded-lg hover:bg-red-500/10 transition-all">
                                             <div>
                                                 <p className="text-white font-medium">{item.title}</p>
                                                 <p className="text-red-200 text-sm">{item.subtitle}</p>
                                             </div>
                                             <Link
                                                 href={`/admin/${item.type}s/${item.id}`}
-                                                className="text-red-300 hover:text-red-200 text-sm font-medium"
+                                                className="text-red-300 hover:text-red-200 text-sm font-medium transition-colors"
                                             >
                                                 View →
                                             </Link>
@@ -228,14 +237,14 @@ export default function AdminDashboard({
                                 <h4 className="text-lg font-semibold text-white">Recent Service Requests</h4>
                                 <Link
                                     href="/admin/requests"
-                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                                 >
                                     View All →
                                 </Link>
                             </div>
                             <div className="space-y-3">
                                 {recentRequests.slice(0, 5).map((request) => (
-                                    <div key={request.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                                    <div key={request.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg hover:bg-white/10 transition-all">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-lg">🏡</span>
@@ -253,7 +262,7 @@ export default function AdminDashboard({
                                             </span>
                                             <Link
                                                 href={`/admin/requests/${request.id}`}
-                                                className="text-blue-400 hover:text-blue-300 text-sm"
+                                                className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
                                             >
                                                 View
                                             </Link>
@@ -263,7 +272,13 @@ export default function AdminDashboard({
                                 {recentRequests.length === 0 && (
                                     <div className="text-center py-8 text-gray-400">
                                         <span className="text-4xl block mb-2">📋</span>
-                                        No recent requests
+                                        <p className="text-sm">No recent requests</p>
+                                        <Link
+                                            href="/admin/requests"
+                                            className="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block"
+                                        >
+                                            View all requests →
+                                        </Link>
                                     </div>
                                 )}
                             </div>
@@ -275,14 +290,14 @@ export default function AdminDashboard({
                                 <h4 className="text-lg font-semibold text-white">Recent Appointments</h4>
                                 <Link
                                     href="/admin/appointments"
-                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                                 >
                                     View All →
                                 </Link>
                             </div>
                             <div className="space-y-3">
                                 {recentAppointments.slice(0, 5).map((appointment) => (
-                                    <div key={appointment.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                                    <div key={appointment.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg hover:bg-white/10 transition-all">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-lg">📅</span>
@@ -300,7 +315,7 @@ export default function AdminDashboard({
                                             </span>
                                             <Link
                                                 href={`/admin/appointments/${appointment.id}`}
-                                                className="text-blue-400 hover:text-blue-300 text-sm"
+                                                className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
                                             >
                                                 View
                                             </Link>
@@ -310,7 +325,13 @@ export default function AdminDashboard({
                                 {recentAppointments.length === 0 && (
                                     <div className="text-center py-8 text-gray-400">
                                         <span className="text-4xl block mb-2">📅</span>
-                                        No recent appointments
+                                        <p className="text-sm">No recent appointments</p>
+                                        <Link
+                                            href="/admin/appointments"
+                                            className="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block"
+                                        >
+                                            View all appointments →
+                                        </Link>
                                     </div>
                                 )}
                             </div>
@@ -329,7 +350,7 @@ export default function AdminDashboard({
                                 >
                                     <span className="text-2xl mr-3">👤</span>
                                     <div>
-                                        <p className="text-white font-medium group-hover:text-blue-300">Add New User</p>
+                                        <p className="text-white font-medium group-hover:text-blue-300 transition-colors">Add New User</p>
                                         <p className="text-gray-400 text-sm">Create client or admin account</p>
                                     </div>
                                 </Link>
@@ -340,7 +361,7 @@ export default function AdminDashboard({
                                 >
                                     <span className="text-2xl mr-3">📋</span>
                                     <div>
-                                        <p className="text-white font-medium group-hover:text-orange-300">Manage Requests</p>
+                                        <p className="text-white font-medium group-hover:text-orange-300 transition-colors">Manage Requests</p>
                                         <p className="text-gray-400 text-sm">Review pending requests</p>
                                     </div>
                                 </Link>
@@ -351,21 +372,32 @@ export default function AdminDashboard({
                                 >
                                     <span className="text-2xl mr-3">📅</span>
                                     <div>
-                                        <p className="text-white font-medium group-hover:text-green-300">View Schedule</p>
+                                        <p className="text-white font-medium group-hover:text-green-300 transition-colors">View Schedule</p>
                                         <p className="text-gray-400 text-sm">Manage appointments</p>
                                     </div>
                                 </Link>
 
                                 <button
-                                    onClick={() => info('Emergency dispatch system ready')}
+                                    onClick={handleEmergencyDispatch}
                                     className="w-full flex items-center p-3 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all group"
                                 >
                                     <span className="text-2xl mr-3">🚨</span>
                                     <div className="text-left">
-                                        <p className="text-white font-medium group-hover:text-red-300">Emergency Dispatch</p>
+                                        <p className="text-white font-medium group-hover:text-red-300 transition-colors">Emergency Dispatch</p>
                                         <p className="text-gray-400 text-sm">24/7 emergency response</p>
                                     </div>
                                 </button>
+
+                                <Link
+                                    href="/admin/analytics"
+                                    className="flex items-center p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/20 transition-all group"
+                                >
+                                    <span className="text-2xl mr-3">📈</span>
+                                    <div>
+                                        <p className="text-white font-medium group-hover:text-purple-300 transition-colors">View Analytics</p>
+                                        <p className="text-gray-400 text-sm">Business intelligence</p>
+                                    </div>
+                                </Link>
                             </div>
                         </div>
 
@@ -375,14 +407,14 @@ export default function AdminDashboard({
                                 <h4 className="text-lg font-semibold text-white">Recent Users</h4>
                                 <Link
                                     href="/admin/users"
-                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                                    className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                                 >
                                     View All →
                                 </Link>
                             </div>
                             <div className="space-y-3">
                                 {recentUsers.slice(0, 5).map((user) => (
-                                    <div key={user.id} className="flex items-center justify-between">
+                                    <div key={user.id} className="flex items-center justify-between hover:bg-white/5 p-2 rounded-lg transition-all">
                                         <div className="flex items-center">
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm mr-3">
                                                 {user.name.charAt(0).toUpperCase()}
@@ -394,7 +426,7 @@ export default function AdminDashboard({
                                         </div>
                                         <Link
                                             href={`/admin/users/${user.id}`}
-                                            className="text-blue-400 hover:text-blue-300 text-xs"
+                                            className="text-blue-400 hover:text-blue-300 text-xs transition-colors"
                                         >
                                             View
                                         </Link>
@@ -404,6 +436,12 @@ export default function AdminDashboard({
                                     <div className="text-center py-4 text-gray-400">
                                         <span className="text-2xl block mb-1">👥</span>
                                         <span className="text-xs">No recent users</span>
+                                        <Link
+                                            href="/admin/users/create"
+                                            className="text-blue-400 hover:text-blue-300 text-xs block mt-1"
+                                        >
+                                            Add first user →
+                                        </Link>
                                     </div>
                                 )}
                             </div>
@@ -436,6 +474,35 @@ export default function AdminDashboard({
                                     <span className="text-green-400 text-sm flex items-center">
                                         🟢 Active
                                     </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-300 text-sm">Client Portal</span>
+                                    <span className="text-green-400 text-sm flex items-center">
+                                        🟢 Operational
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Stats */}
+                        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <h4 className="text-lg font-semibold text-white mb-4">Today's Activity</h4>
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-300 text-sm">New Requests</span>
+                                    <span className="text-orange-400 font-semibold">{stats.requests_today || 0}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-300 text-sm">Scheduled Services</span>
+                                    <span className="text-blue-400 font-semibold">{stats.appointments_today || 0}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-300 text-sm">Completed Tasks</span>
+                                    <span className="text-green-400 font-semibold">{stats.completed_today || 0}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-gray-300 text-sm">Active Technicians</span>
+                                    <span className="text-purple-400 font-semibold">{stats.active_staff || 0}</span>
                                 </div>
                             </div>
                         </div>

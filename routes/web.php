@@ -23,7 +23,8 @@ Route::get('/', function () {
 Route::get('/language/{language}', [LanguageController::class, 'switch'])->name('language.switch');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('client.dashboard');
+    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('client.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -36,9 +37,9 @@ Route::middleware(['auth'])->prefix('billing')->group(function () {
     Route::get('/overview', [BillingController::class, 'overview'])->middleware('auth');
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('admin.subscriptions.index');
-});
+// Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+//     Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('admin.subscriptions.index');
+// });
 
 // Client Request Routes
 Route::middleware(['auth'])->prefix('requests')->name('requests.')->group(function () {
@@ -89,6 +90,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('admin.subscriptions.index');
     
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
