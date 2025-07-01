@@ -11,6 +11,8 @@ use App\Http\Controllers\Client\AppointmentController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RequestController as AdminRequestController;
+use App\Http\Controllers\Admin\DocumentController;
+use App\Http\Controllers\Client\BillingController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -26,6 +28,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+// Payment and Billing Routes
+Route::middleware(['auth'])->prefix('billing')->group(function () {
+    Route::post('/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
 });
 
 // Client Request Routes
@@ -95,6 +101,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/{id}', [AdminRequestController::class, 'show'])->name('show');
         Route::patch('/{id}', [AdminRequestController::class, 'update'])->name('update');
     });
+
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+    Route::delete('/documents/{id}/delete', [DocumentController::class, 'destroy'])->name('documents.destroy');
 });
 
 // Auth routes (login, logout, register processing)
