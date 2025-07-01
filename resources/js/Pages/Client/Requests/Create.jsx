@@ -158,26 +158,20 @@ export default function CreateRequest({ auth }) {
         selectedFiles.forEach((file, index) => {
             formData.append(`attachments[${index}]`, file);
         });
-
-        post(route('requests.store'), {
+        console.log('Route URL:', route('requests.store'));
+        console.log('Form Data being sent:', Object.fromEntries(formData));
+        post('/requests', {  // Use direct URL instead of route helper
             data: formData,
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                success('🏡 Service request submitted successfully! Our NWB team will contact you within the specified timeframe to schedule your visit.');
+                success('🏡 Service request submitted successfully!');
                 reset();
                 setSelectedFiles([]);
             },
             onError: (errors) => {
                 console.error('Form submission errors:', errors);
-                if (errors.message) {
-                    error(errors.message);
-                } else {
-                    error('Failed to submit service request. Please check all required fields and try again, or call our emergency hotline: (323) 555-HOME');
-                }
-            },
-            onFinish: () => {
-                // Always called after request completes
+                error('Failed to submit service request.');
             }
         });
     };

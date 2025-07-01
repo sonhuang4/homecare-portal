@@ -5,7 +5,7 @@ const Toast = ({ toast }) => {
     const { removeToast } = useToast();
 
     const getToastStyles = (type) => {
-        const baseStyles = "fixed top-4 right-4 p-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-50 max-w-md";
+        const baseStyles = "fixed top-4 right-4 p-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-50 w-[550px]";
         
         switch (type) {
             case 'success':

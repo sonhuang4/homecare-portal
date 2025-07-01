@@ -341,18 +341,11 @@ export default function RequestIndex({
 
                                     {/* Actions */}
                                     <div className="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-48">
-                                        <button
-                                            onClick={() => openDetailsModal(request)}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                                        >
-                                            View Details
-                                        </button>
-                                        
                                         <Link
                                             href={`/requests/${request.id}`}
                                             className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all text-center"
                                         >
-                                            Full Details
+                                            View Details
                                         </Link>
                                         
                                         {request.status === 'completed' && (

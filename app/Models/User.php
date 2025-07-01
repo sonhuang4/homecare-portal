@@ -76,9 +76,9 @@ class User extends Authenticatable
     /**
      * Get the requests for the user.
      */
-    public function requests(): HasMany
+    public function requests()
     {
-        return $this->hasMany(Request::class);
+        return $this->hasMany(\App\Models\Request::class);
     }
 
     /**

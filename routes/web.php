@@ -46,7 +46,13 @@ Route::middleware(['auth'])->prefix('requests')->name('requests.')->group(functi
     Route::get('/', [RequestController::class, 'index'])->name('index');           
     Route::get('/create', [RequestController::class, 'create'])->name('create');   
     Route::post('/', [RequestController::class, 'store'])->name('store');          
-    Route::get('/{id}', [RequestController::class, 'show'])->name('show');         
+    Route::get('/{id}', [RequestController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [RequestController::class, 'edit'])->name('edit');
+    Route::patch('/{id}', [RequestController::class, 'update'])->name('update');
+    Route::patch('/{id}/cancel', [RequestController::class, 'cancel'])->name('cancel');
+    Route::get('/stats', [RequestController::class, 'getStats'])->name('stats');
+    Route::get('/{id}/download/{index}', [RequestController::class, 'downloadAttachment'])->name('download');
+    Route::post('/bulk', [RequestController::class, 'bulkAction'])->name('bulk');
 });
 
 // Client Appointment Routes
