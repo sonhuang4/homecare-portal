@@ -260,7 +260,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                 className="inline-flex items-center px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 hover:scale-105"
                                 style={{ backgroundColor: "#00b3ba" }}
                             >
-                                📞 (323) 555-HOME - Emergency Hotline
+                                📞 818---397--8536 - Emergency Hotline
                             </a>
                         </div>
                     </div>
@@ -655,7 +655,7 @@ export default function CreateAppointment({ auth, selectedDate, availableSlots =
                                 </h4>
                                 <ul className="text-yellow-200 text-sm space-y-1">
                                     <li>• Our licensed technicians will arrive within the scheduled time window</li>
-                                    <li>• Service includes assessment, work completion, and cleanup</li>
+                                    <li>• Service includes Inspection Session, work completion, and cleanup</li>
                                     <li>• You will receive SMS updates and can track technician arrival</li>
                                     <li>• Emergency services available 24/7 at (323) 555-HOME</li>
                                     <li>• All work includes NWB quality guarantee and warranty</li>

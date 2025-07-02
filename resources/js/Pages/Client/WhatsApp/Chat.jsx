@@ -208,7 +208,7 @@ export default function WhatsAppChat({ auth, supportTeams, businessPhone }) {
                                 className="inline-flex items-center px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 hover:scale-105 text-sm mr-3"
                                 style={{ backgroundColor: "#00b3ba" }}
                             >
-                                📞 (323) 555-HOME - Emergency Hotline
+                                📞 818---397--8536 - Emergency Hotline
                             </a>
                             <button
                                 onClick={() => handleTeamSelect('emergency')}

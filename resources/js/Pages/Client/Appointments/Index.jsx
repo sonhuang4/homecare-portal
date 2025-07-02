@@ -47,7 +47,7 @@ export default function AppointmentsIndex({ auth, appointments = [], stats = {},
             landscaping_service: '🌿',
             security_service: '🔒',
             general_maintenance: '🛠️',
-            consultation: '👨‍⚕️',
+            consultation: '👨🏻‍🚒',
             home_visit: '🏠',
             follow_up: '🔄',
             assessment: '📋',
@@ -121,7 +121,7 @@ export default function AppointmentsIndex({ auth, appointments = [], stats = {},
         home_visit: 'Home Visit',
         follow_up: 'Follow-up Visit',
         assessment: 'Assessment',
-        therapy: 'Therapy Session',
+        inspection: 'Inspection Session',
     };
 
     return (
@@ -175,7 +175,7 @@ export default function AppointmentsIndex({ auth, appointments = [], stats = {},
                                 className="inline-flex items-center px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 hover:scale-105 text-sm"
                                 style={{ backgroundColor: "#00b3ba" }}
                             >
-                                📞 (323) 555-HOME - Emergency Hotline
+                                📞 818---397--8536 - Emergency Hotline
                             </a>
                         </div>
                     </div>

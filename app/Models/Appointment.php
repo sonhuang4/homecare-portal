@@ -50,7 +50,7 @@ class Appointment extends Model
         'home_visit' => 'Home Visit',
         'follow_up' => 'Follow-up Visit',
         'assessment' => 'Assessment',
-        'therapy' => 'Therapy Session',
+        'inspection' => 'Inspection Session',
     ];
 
     // Status options
