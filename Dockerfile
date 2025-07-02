@@ -1,45 +1,45 @@
-# Step 1: Build Vite assets
-FROM node:20 AS node-builder
+# -------------------------------------
+# Build stage for Vite (Node)
+# -------------------------------------
+FROM node:20-alpine as node-builder
+
 WORKDIR /app
 
-COPY package.json vite.config.js ./          
-COPY resources ./resources
-COPY public ./public
+COPY package*.json ./
+RUN npm install
 
-RUN npm install && npm run build
+COPY resources/ resources/
+COPY vite.config.js ./
 
-# Step 2: Set up PHP + Apache + Composer
+RUN npm run build
+
+# -------------------------------------
+# Laravel App (PHP + Apache)
+# -------------------------------------
 FROM php:8.2-apache
 
-# Install PHP extensions and dependencies
-RUN apt-get update && apt-get install -y \
-    git curl zip unzip libonig-dev libxml2-dev libpng-dev libzip-dev libsqlite3-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath
-
-# Enable Apache modules
-RUN a2enmod rewrite
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy Laravel app code
+# Enable Apache rewrite
+RUN a2enmod rewrite
+
+# Install system deps
+RUN apt-get update && apt-get install -y \
+    unzip \
+    libzip-dev \
+    && docker-php-ext-install zip pdo pdo_mysql
+
+# Copy Laravel app files
 COPY . .
 
-# Copy built frontend assets into public folder
-COPY --from=node-builder /app/public ./public
+# Set proper permissions
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php && \
-    php composer.phar install --no-dev --optimize-autoloader
-
-# Set Laravel permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Add DirectoryIndex fallback for Laravel
+# Add fallback for Apache
 RUN echo '<IfModule dir_module>\n  DirectoryIndex index.php index.html\n</IfModule>' > /etc/apache2/conf-available/laravel.conf && \
     a2enconf laravel
 
-# Set Laravel public folder as Apache DocumentRoot
+# Set public folder as DocumentRoot
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -49,5 +49,8 @@ RUN echo '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Expose port 80
+# Copy Vite build assets from node-builder
+COPY --from=node-builder /app/public/build ./public/build
+
+# Expose port
 EXPOSE 80
