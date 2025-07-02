@@ -1,15 +1,15 @@
 # -------------------------------------
-# Build stage for Vite (Node)
+# Build assets with Vite (Node)
 # -------------------------------------
 FROM node:20-alpine as node-builder
 
 WORKDIR /app
 
-# Install dependencies and build frontend
-COPY package*.json vite.config.js ./
-COPY resources/ resources/
-RUN npm install
-RUN npm run build
+COPY package*.json ./
+COPY vite.config.js ./
+COPY resources/ ./resources
+
+RUN npm install && npm run build
 
 # -------------------------------------
 # Laravel App (PHP + Apache)
@@ -21,31 +21,31 @@ WORKDIR /var/www/html
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     zip \
-    && docker-php-ext-install zip pdo pdo_mysql
+    git \
+    curl \
+    && docker-php-ext-install pdo pdo_mysql zip
 
-# Install Composer (from official composer image)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy entire Laravel app
+# Copy Laravel source code
 COPY . .
 
-# Install PHP dependencies with Composer
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set correct permissions
+# Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Apache config for Laravel
 RUN echo '<IfModule dir_module>\n  DirectoryIndex index.php index.html\n</IfModule>' > /etc/apache2/conf-available/laravel.conf && \
-    a2enconf laravel
-
-# Set Laravel public as DocumentRoot
-RUN echo '<VirtualHost *:80>\n\
+    a2enconf laravel && \
+    echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         Options Indexes FollowSymLinks\n\
@@ -54,8 +54,7 @@ RUN echo '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Copy frontend build from Node stage
+# Copy built assets from node-builder
 COPY --from=node-builder /app/public/build ./public/build
 
-# Expose port
 EXPOSE 80
