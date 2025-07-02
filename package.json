@@ -24,6 +24,8 @@
     },
     "dependencies": {
         "@inertiajs/react": "^2.0.13",
+        "@stripe/react-stripe-js": "^3.7.0",
+        "@stripe/stripe-js": "^7.4.0",
         "@vitejs/plugin-react": "^4.5.2",
         "react": "^19.1.0",
         "react-dom": "^19.1.0"
