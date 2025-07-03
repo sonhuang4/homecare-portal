@@ -5,20 +5,21 @@ FROM php:8.2-cli AS build
 
 WORKDIR /var/www
 
-# Install system dependencies
+# Install system dependencies & PHP extensions needed by Laravel
 RUN apt-get update && apt-get install -y \
-    curl unzip git gnupg
+    curl unzip git gnupg libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev \
+    && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip fileinfo mbstring bcmath
 
-# Install Composer manually
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy project source
+# Copy app source
 COPY . .
 
-# ✅ Show PHP info and try Composer install (with full error output)
-RUN php -v && php -m && php -i && composer install
+# Run Composer install with unlimited memory to avoid OOM issues
+RUN php -d memory_limit=-1 /usr/local/bin/composer install --optimize-autoloader --no-dev
 
-# Install Node 18 and build frontend assets
+# Install Node.js (for Vite)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     npm install && npm run build
@@ -28,7 +29,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # ----------------------------------------
 FROM php:8.2-apache
 
-# Install required PHP extensions (including SQLite fixes)
+# Install PHP extensions again (runtime layer)
 RUN apt-get update && apt-get install -y \
     libzip-dev libsqlite3-dev unzip git libpng-dev libonig-dev libxml2-dev zip \
     && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip fileinfo mbstring bcmath
@@ -36,20 +37,19 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Set Laravel public folder as Apache root
+# Set Apache document root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy compiled build from first stage
+# Copy built app from build stage
 COPY --from=build /var/www /var/www/html
 
-# Create SQLite DB and fix permissions
+# Create SQLite database and set permissions
 RUN mkdir -p database && \
     touch database/database.sqlite && \
     chown -R www-data:www-data storage bootstrap/cache database
 
-# Start: migrate, seed, then Apache
+# Final CMD
 CMD bash -c "php artisan migrate --force && php artisan db:seed --force && exec apache2-foreground"
