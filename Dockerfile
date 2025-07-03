@@ -1,47 +1,44 @@
-# Stage 1: Build assets & install dependencies
+# Stage 1: Composer + Vite Build
 FROM composer:latest AS build
 
 WORKDIR /var/www
 
-# Copy everything into container
+# Copy app source
 COPY . .
 
-# Install PHP dependencies
+# PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Install Node & build assets
-RUN apt-get update && \
-    apt-get install -y curl gnupg && \
+# Node for Vite
+RUN apt-get update && apt-get install -y curl gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     npm install && npm run build
 
-# Stage 2: Serve with Apache + PHP
+# Stage 2: Apache + PHP Runtime
 FROM php:8.2-apache
 
-# Required extensions
+# Install PHP extensions
 RUN apt-get update && apt-get install -y \
     libzip-dev unzip git libpng-dev libonig-dev libxml2-dev zip \
-    && docker-php-ext-install pdo_mysql zip
+    && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip
 
-# Enable Apache rewrite module
+# Enable Apache rewrite
 RUN a2enmod rewrite
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy app from build stage
-COPY --from=build /var/www /var/www/html
-
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Set Laravel public folder
+# Set Laravel public dir
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-# Update Apache config to use public/ as root
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
-EXPOSE 80
+WORKDIR /var/www/html
 
-CMD ["apache2-foreground"]
+# Copy built files from build stage
+COPY --from=build /var/www /var/www/html
+
+# Auto-create SQLite DB file and set permissions
+RUN mkdir -p database && \
+    touch database/database.sqlite && \
+    chown -R www-data:www-data storage bootstrap/cache database
+
+# Run migrations and seeders on container start
+CMD php artisan migrate --force && php artisan db:seed --force && apache2-foreground
