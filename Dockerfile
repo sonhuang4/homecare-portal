@@ -7,7 +7,7 @@ WORKDIR /var/www
 COPY . .
 
 # PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+# RUN composer install --optimize-autoloader --no-dev
 
 # Node for Vite
 RUN apt-get update && apt-get install -y curl gnupg && \
