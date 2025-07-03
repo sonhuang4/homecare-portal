@@ -1,5 +1,5 @@
 # ----------------------------------------
-# Stage 1: Build (PHP + Composer + Node)
+# Stage 1: PHP + Composer + Vite Build
 # ----------------------------------------
 FROM php:8.2-cli AS build
 
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy app source code
+# Copy Laravel source code
 COPY . .
 
 # Install PHP dependencies
@@ -24,31 +24,32 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     npm install && npm run build
 
 # ----------------------------------------
-# Stage 2: Runtime (Apache + PHP + Laravel)
+# Stage 2: Apache + Laravel Runtime
 # ----------------------------------------
 FROM php:8.2-apache
 
-# Install required PHP extensions
+# Install system & PHP extensions (includes libsqlite3-dev fix)
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git libpng-dev libonig-dev libxml2-dev zip \
+    libzip-dev libsqlite3-dev unzip git libpng-dev libonig-dev libxml2-dev zip \
     && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
 
-# Set Laravel's public folder as document root
+# Set Laravel public folder as doc root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy built app from build stage
+# Copy from build stage
 COPY --from=build /var/www /var/www/html
 
-# Create SQLite file and set correct permissions
+# Create SQLite file + fix permissions
 RUN mkdir -p database && \
     touch database/database.sqlite && \
     chown -R www-data:www-data storage bootstrap/cache database
 
-# Run migrations and seeders, then start Apache
+# Run migrations + seeders, then Apache
 CMD bash -c "php artisan migrate --force && php artisan db:seed --force && exec apache2-foreground"
