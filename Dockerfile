@@ -31,7 +31,7 @@ FROM php:8.2-apache
 # Install required PHP extensions (including SQLite fixes)
 RUN apt-get update && apt-get install -y \
     libzip-dev libsqlite3-dev unzip git libpng-dev libonig-dev libxml2-dev zip \
-    && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip fileinfo mbstring
+    && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip fileinfo mbstring bcmath
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
