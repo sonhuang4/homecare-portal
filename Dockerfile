@@ -16,7 +16,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install
 
 # Install Node.js 18 and build assets
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
