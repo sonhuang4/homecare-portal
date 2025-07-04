@@ -13,8 +13,8 @@ storage/*.key
 /storage/pail
 
 # SQLite (optional)
-database/*.sqlite
-database/*.sqlite3
+# database/*.sqlite
+# database/*.sqlite3
 
 # Node / Frontend
 /node_modules/
