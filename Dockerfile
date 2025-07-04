@@ -1,4 +1,4 @@
-# ---- 1. Build frontend (React/Vite) ----
+# ---- 1. Build frontend ----
 FROM node:18 AS frontend
 
 WORKDIR /app
@@ -47,8 +47,9 @@ COPY --from=frontend /app/resources ./resources
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www \
+# Make sure storage folder exists
+RUN mkdir -p /var/www/storage \
+    && chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage
 
-# Entry point left empty – Render sets this
+# Start command is empty because Render handles this
