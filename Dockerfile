@@ -14,7 +14,7 @@ COPY public public
 RUN npm run build
 
 # ---- 2. Build Laravel app ----
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -47,9 +47,13 @@ COPY --from=frontend /app/resources ./resources
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Make sure storage folder exists
+# Laravel permissions
 RUN mkdir -p /var/www/storage \
-    && chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www
 
-# Start command is empty because Render handles this
+# Expose HTTP port expected by Render
+EXPOSE 10000
+
+# Start Laravel using artisan serve
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
