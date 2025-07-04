@@ -1,5 +1,5 @@
 node_modules
 vendor
 .env
-/storage/*.key
+storage/*.key
 /public/storage

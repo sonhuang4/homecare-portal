@@ -1,37 +1,28 @@
-# ---- Base PHP image ----
+# Use official PHP FPM image
 FROM php:8.2-fpm
 
-# ---- System dependencies ----
-RUN apt-get update && apt-get install -y \
-    curl \
-    zip \
-    unzip \
-    git \
-    libonig-dev \
-    libxml2-dev \
-    sqlite3 \
-    libsqlite3-dev \
-    npm \
-    nodejs \
-    && docker-php-ext-install pdo pdo_sqlite
-
-# ---- Install Composer ----
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# ---- Set working directory ----
+# Set working directory
 WORKDIR /var/www/html
 
-# ---- Copy project files ----
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    zip unzip git curl libonig-dev libxml2-dev sqlite3 libsqlite3-dev nodejs npm \
+    && docker-php-ext-install pdo pdo_sqlite
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy app files
 COPY . .
 
-# ---- Install PHP deps ----
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# ---- Build frontend ----
+# Build React assets
 RUN npm install && npm run build
 
-# ---- Set permissions ----
+# Set permissions for Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
-# ---- Serve app ----
+# Serve Laravel app
 CMD php artisan serve --host=0.0.0.0 --port=10000
