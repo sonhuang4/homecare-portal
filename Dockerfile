@@ -35,13 +35,16 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
 # Copy Laravel app
 COPY . .
 
-# ✅ Add dummy .env file (Render uses its own env vars)
+# ✅ Add dummy .env so artisan works
 RUN touch .env
+
+# ✅ Fix: Create SQLite file in expected location
+RUN mkdir -p database && touch database/database.sqlite
 
 # Copy built frontend
 COPY --from=frontend /app/public ./public
@@ -50,13 +53,13 @@ COPY --from=frontend /app/resources ./resources
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Laravel permissions
-RUN mkdir -p /var/www/storage \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
-    && chown -R www-data:www-data /var/www
+# Set permissions
+RUN mkdir -p storage \
+ && chmod -R 775 storage bootstrap/cache \
+ && chown -R www-data:www-data .
 
-# ✅ Port expected by Render
+# ✅ Expose required port
 EXPOSE 10000
 
-# ✅ Start Laravel server on required port
+# ✅ Start Laravel server
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
