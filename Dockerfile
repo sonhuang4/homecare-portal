@@ -40,6 +40,9 @@ WORKDIR /var/www
 # Copy Laravel app
 COPY . .
 
+# ✅ Add dummy .env file (Render uses its own env vars)
+RUN touch .env
+
 # Copy built frontend
 COPY --from=frontend /app/public ./public
 COPY --from=frontend /app/resources ./resources
@@ -52,8 +55,8 @@ RUN mkdir -p /var/www/storage \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
     && chown -R www-data:www-data /var/www
 
-# Expose HTTP port expected by Render
+# ✅ Port expected by Render
 EXPOSE 10000
 
-# Start Laravel using artisan serve
+# ✅ Start Laravel server on required port
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
