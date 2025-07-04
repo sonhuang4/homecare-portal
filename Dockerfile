@@ -18,6 +18,7 @@ FROM php:8.2-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    apt-utils \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -26,7 +27,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     sqlite3 \
     git \
-    && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
+ && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
