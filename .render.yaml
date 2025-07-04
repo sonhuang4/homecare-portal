@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: homecare-portal
+    env: docker
+    plan: free
+    repo: https://github.com/YOUR_USERNAME/YOUR_REPO
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    buildFilter:
+      paths:
+        - "**/*"
+    healthCheckPath: /

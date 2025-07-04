@@ -1,14 +1,16 @@
 #!/bin/bash
 
 # Create SQLite DB if not exists
-if [ ! -f database/database.sqlite ]; then
-  touch database/database.sqlite
-fi
+mkdir -p database
+touch database/database.sqlite
 
-# Laravel setup
-php artisan config:clear
+# Cache config and routes
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Migrate DB
 php artisan migrate --force
-php artisan db:seed --force
 
-# Start Apache
-exec apache2-foreground
+# Start PHP server
+php -S 0.0.0.0:10000 -t public
