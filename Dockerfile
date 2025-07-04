@@ -1,27 +1,51 @@
+# ---- 1. Build frontend ----
+FROM node:18 AS frontend
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY resources resources
+COPY vite.config.js ./
+COPY tailwind.config.js ./
+COPY public public
+
+RUN npm run build
+
+# ---- 2. Build Laravel app ----
 FROM php:8.2-fpm
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev zip unzip sqlite3 libsqlite3-dev \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    curl \
+    sqlite3 \
+    git \
     && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www
 
-# Copy files
+# Copy Laravel app
 COPY . .
 
-# Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
+# Copy built frontend
+COPY --from=frontend /app/public ./public
+COPY --from=frontend /app/resources ./resources
 
-# Build JS
-RUN npm install && npm run build
+# Install PHP dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Set permissions
-RUN chmod -R 755 storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage
 
-EXPOSE 10000
-
-CMD ["bash", "./start.sh"]
+# Start command is defined in Render dashboard (leave empty here)
