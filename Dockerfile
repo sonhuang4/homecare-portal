@@ -1,50 +1,37 @@
-# -----------------------------
-# Stage 1: Build PHP + Node + Composer
-# -----------------------------
-FROM php:8.2-cli AS build
+# ---- Base PHP image ----
+FROM php:8.2-fpm
 
-WORKDIR /var/www
-
+# ---- System dependencies ----
 RUN apt-get update && apt-get install -y \
-    unzip git curl gnupg libzip-dev libpng-dev libonig-dev libxml2-dev libsqlite3-dev zip
+    curl \
+    zip \
+    unzip \
+    git \
+    libonig-dev \
+    libxml2-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    npm \
+    nodejs \
+    && docker-php-ext-install pdo pdo_sqlite
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# ---- Install Composer ----
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY . .
-
-RUN cp .env.example .env || true
-RUN mkdir -p storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
-
-# ✅ Fix: allow root + keep scripts
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
-
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install && npm run build
-
-# -----------------------------
-# Stage 2: Runtime
-# -----------------------------
-FROM php:8.2-apache
-
-RUN apt-get update && apt-get install -y \
-    libzip-dev libsqlite3-dev zip git unzip \
-    libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_sqlite pdo_mysql zip fileinfo mbstring bcmath
-
-RUN a2enmod rewrite
-
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-
+# ---- Set working directory ----
 WORKDIR /var/www/html
 
-COPY --from=build /var/www /var/www/html
+# ---- Copy project files ----
+COPY . .
 
-RUN chown -R www-data:www-data storage bootstrap/cache database || true
+# ---- Install PHP deps ----
+RUN composer install --no-dev --optimize-autoloader
 
-# Optional: run Laravel post-setup
-RUN php artisan config:clear && \
-    php artisan package:discover --ansi || true
+# ---- Build frontend ----
+RUN npm install && npm run build
 
-CMD ["apache2-foreground"]
+# ---- Set permissions ----
+RUN chmod -R 775 storage bootstrap/cache
+
+# ---- Serve app ----
+CMD php artisan serve --host=0.0.0.0 --port=10000
