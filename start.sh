@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# Create SQLite DB if not exists
-mkdir -p database
-touch database/database.sqlite
+# Ensure SQLite DB exists
+if [ ! -f "database/database.sqlite" ]; then
+  echo "Creating SQLite DB file..."
+  touch database/database.sqlite
+fi
 
-# Cache config and routes
+# Set correct permissions
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache || true
+
+# Cache Laravel config and routes
+php artisan config:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Migrate DB
+# Run migrations (optional, if using DB)
 php artisan migrate --force
 
-# Start PHP server
+# Start Laravel server
 php -S 0.0.0.0:10000 -t public
