@@ -13,7 +13,8 @@ COPY public public
 
 RUN npm run build
 
-# ---- 2. Build Laravel app ----
+
+# ---- 2. Build Laravel App ----
 FROM php:8.2-cli
 
 # Install system dependencies
@@ -40,33 +41,29 @@ WORKDIR /var/www
 # Copy Laravel app
 COPY . .
 
-# ✅ Ensure SQLite file exists before Laravel runs
-RUN mkdir -p /var/www/database && \
-    touch /var/www/database/database.sqlite && \
-    chown -R www-data:www-data /var/www/database
+# ✅ Create required SQLite file for production
+RUN mkdir -p database && \
+    touch database/database.sqlite && \
+    chown -R www-data:www-data database
 
-# ✅ Add dummy .env file if not injected (Render will inject real env vars)
-RUN touch .env
-
-# Copy built frontend from stage
+# ✅ Copy frontend build artifacts
 COPY --from=frontend /app/public ./public
 COPY --from=frontend /app/resources ./resources
 
-# Install PHP dependencies
+# ✅ Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# ✅ Laravel required dirs and permissions
+# ✅ Create Laravel cache/log folders and fix permissions
 RUN mkdir -p \
-    storage \
-    storage/framework \
-    storage/framework/cache \
+    bootstrap/cache \
     storage/framework/views \
-    storage/logs \
-    bootstrap/cache && \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/logs && \
     chmod -R 775 storage bootstrap/cache database && \
-    chown -R www-data:www-data .
+    chown -R www-data:www-data storage bootstrap/cache database
 
-# ✅ Expose port expected by Render
+# ✅ Expose port for Render
 EXPOSE 10000
 
 # ✅ Start Laravel development server
