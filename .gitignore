@@ -18,7 +18,7 @@ storage/*.key
 
 # Node / Frontend
 /node_modules/
-public/build/
+# public/build/
 public/hot/
 public/mix-manifest.json
 
