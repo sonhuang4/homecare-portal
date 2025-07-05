@@ -10,9 +10,10 @@ COPY resources resources
 COPY public public
 COPY vite.config.js ./
 COPY tailwind.config.js ./
-COPY postcss.config.js ./   # <-- Ensure this file exists too
+COPY postcss.config.js ./
 
 RUN npm run build
+
 
 # ---- 2. Laravel backend (PHP + SQLite) ----
 FROM php:8.2-cli
@@ -30,7 +31,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy entire Laravel app
+# Copy Laravel app
 COPY . .
 
 # Ensure SQLite DB exists and is writable
@@ -39,22 +40,22 @@ RUN mkdir -p database && \
     chmod -R 775 database && \
     chown -R www-data:www-data database
 
-# Ensure .env file exists (Render injects real values)
+# Ensure .env exists (Render injects real values)
 RUN touch .env
 
-# Copy built frontend from previous stage
+# Copy built frontend
 COPY --from=frontend /app/public/build ./public/build
 COPY --from=frontend /app/resources ./resources
 
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Fix Laravel storage permissions
+# Laravel permissions
 RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache && \
     chown -R www-data:www-data .
 
-# Expose port expected by Render
+# Expose Render port
 EXPOSE 10000
 
 # Start Laravel server
